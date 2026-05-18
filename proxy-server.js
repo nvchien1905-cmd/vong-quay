@@ -248,19 +248,30 @@ let _groupsCache = null, _groupsCacheAt = 0;
 async function getCustomerGroups() {
   if (_groupsCache && Date.now() - _groupsCacheAt < 30 * 60 * 1000) return _groupsCache;
   const token = await getToken();
-  const data  = await httpsRequest({
-    hostname: 'public.kiotapi.com',
-    path:     '/customergroups',
-    method:   'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Retailer':      CFG.RETAILER,
-    },
-  });
+
+  // Thử lần lượt các path (KiotViet docs không ghi rõ)
+  const paths = ['/customerGroups', '/customergroups', '/customer-groups'];
+  let data = null;
+  for (const p of paths) {
+    try {
+      data = await httpsRequest({
+        hostname: 'public.kiotapi.com',
+        path:     p,
+        method:   'GET',
+        headers: { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
+      });
+      console.log(`[Groups] Path "${p}" thanh cong`);
+      break;
+    } catch (err) {
+      console.warn(`[Groups] Path "${p}" loi: ${err.message}`);
+    }
+  }
+  if (!data) throw new Error('Khong tim thay endpoint customergroups');
+
   // API có thể trả về array trực tiếp hoặc { data: [...] }
   _groupsCache   = Array.isArray(data) ? data : (data.data || []);
   _groupsCacheAt = Date.now();
-  console.log(`[Groups] Loaded ${_groupsCache.length} customer groups`);
+  console.log(`[Groups] Loaded ${_groupsCache.length} nhom:`, _groupsCache.map(g => `${g.name}(${g.discount}%)`).join(', '));
   return _groupsCache;
 }
 
@@ -514,6 +525,23 @@ const server = http.createServer(async (req, res) => {
       console.error('[Groups] Loi:', err.message);
       sendJSON(res, 500, { error: err.message });
     }
+    return;
+  }
+
+  // GET /api/debug/customer?phone=... — xem raw KiotViet response ─
+  if (url.pathname === '/api/debug/customer' && req.method === 'GET') {
+    const phone = url.searchParams.get('phone');
+    if (!phone) { sendJSON(res, 400, { error: 'Thieu phone' }); return; }
+    try {
+      const token = await getToken();
+      const raw   = await httpsRequest({
+        hostname: 'public.kiotapi.com',
+        path:     `/customers?contactNumber=${encodeURIComponent(phone)}&pageSize=1&includeCustomerGroup=true`,
+        method:   'GET',
+        headers:  { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
+      });
+      sendJSON(res, 200, raw);
+    } catch (err) { sendJSON(res, 500, { error: err.message }); }
     return;
   }
 
