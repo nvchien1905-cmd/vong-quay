@@ -228,6 +228,20 @@ async function getInvoices(phone) {
   return data.data || [];
 }
 
+async function getCustomerByPhone(phone) {
+  const token = await getToken();
+  const data  = await httpsRequest({
+    hostname: 'public.kiotapi.com',
+    path:     `/customers?contactNumber=${encodeURIComponent(phone)}&pageSize=5`,
+    method:   'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Retailer':      CFG.RETAILER,
+    },
+  });
+  return data.data || [];
+}
+
 // ──── HTTP Server ────
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin':  '*',
@@ -381,6 +395,35 @@ const server = http.createServer(async (req, res) => {
     await gsClear();
     console.log('[History] Da xoa toan bo lich su');
     sendJSON(res, 200, { ok: true });
+    return;
+  }
+
+  // GET /api/loyalty?phone=09xx ──────────────────────────────
+  if (url.pathname === '/api/loyalty' && req.method === 'GET') {
+    const phone = url.searchParams.get('phone');
+    if (!phone) { sendJSON(res, 400, { error: 'Thieu tham so phone' }); return; }
+
+    console.log(`[Loyalty] SDT: ${phone}`);
+    try {
+      const customers = await getCustomerByPhone(phone);
+      if (!customers.length) {
+        sendJSON(res, 200, { found: false });
+        return;
+      }
+      const c = customers[0];
+      console.log(`[Loyalty] SDT ${phone} -> ${c.name} | ${c.rewardPoint} diem`);
+      sendJSON(res, 200, {
+        found:         true,
+        name:          c.name          || '',
+        phone:         c.contactNumber || phone,
+        rewardPoint:   c.rewardPoint   || 0,
+        totalInvoiced: c.totalInvoiced || 0,
+        debt:          c.debt          || 0,
+      });
+    } catch (err) {
+      console.error('[Loyalty] Loi:', err.message);
+      sendJSON(res, 500, { error: err.message });
+    }
     return;
   }
 

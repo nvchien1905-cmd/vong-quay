@@ -307,6 +307,82 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 .hidden { display: none !important; }
 #secret-zone { position: fixed; bottom: 0; right: 0; width: 44px; height: 44px; z-index: 50; }
 
+/* ── Section wrapper (display:contents khi hiện, none khi ẩn) ── */
+.section-wrap { display: contents; }
+
+/* ── Tab bar ── */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 12px 10px;
+  border: 2px solid rgba(255,215,0,0.25);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.55);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.tab-btn.active {
+  background: rgba(255,215,0,0.13);
+  border-color: rgba(255,215,0,0.65);
+  color: #FFD700;
+}
+.tab-btn:not(.active):hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,215,0,0.4);
+  color: rgba(255,255,255,0.8);
+}
+
+/* ── Loyalty section ── */
+#section-loyalty { width: 100%; max-width: 400px; }
+
+.loyalty-result-box {
+  margin-top: 18px;
+  background: rgba(255,215,0,0.06);
+  border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 14px;
+  padding: 22px 18px 18px;
+  text-align: center;
+}
+.loyalty-pts-num {
+  font-size: 3.4rem;
+  font-weight: 900;
+  color: #FFD700;
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(255,215,0,0.4);
+}
+.loyalty-pts-lbl {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.loyalty-info {
+  border-top: 1px solid rgba(255,215,0,0.15);
+  padding-top: 14px;
+  text-align: left;
+}
+.loyalty-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 0.87rem;
+  color: rgba(255,255,255,0.55);
+}
+.loyalty-info-row strong { color: white; font-weight: 700; }
+
 /* ── LAN / QR Panel ── */
 .lan-panel {
   width: 100%;
@@ -346,40 +422,70 @@ input::placeholder { color: rgba(255,255,255,0.3); }
     <p id="h-tagline">Mua hàng để nhận cơ hội quay thưởng!</p>
   </div>
 
-  <!-- LAN QR Panel — hiện khi server chạy trên mạng nội bộ -->
-  <div id="lan-panel" class="lan-panel hidden">
-    <div id="lan-qr-wrap" class="lan-qr-wrap" style="display:none">
-      <img id="lan-qr-img" src="" alt="QR Code" width="90" height="90">
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-spin">🎡 Quay Thưởng</button>
+    <button class="tab-btn" id="tab-loyalty">🏆 Điểm Tích Lũy</button>
+  </div>
+
+  <!-- Section: Quay thưởng (tất cả nội dung hiện tại) -->
+  <div id="section-spin" class="section-wrap">
+    <!-- LAN QR Panel — hiện khi server chạy trên mạng nội bộ -->
+    <div id="lan-panel" class="lan-panel hidden">
+      <div id="lan-qr-wrap" class="lan-qr-wrap" style="display:none">
+        <img id="lan-qr-img" src="" alt="QR Code" width="90" height="90">
+      </div>
+      <div class="lan-text">
+        <div class="lan-title">📱 Khách truy cập bằng điện thoại</div>
+        <div class="lan-hint">Kết nối cùng WiFi rồi quét mã QR</div>
+        <div class="lan-url" id="lan-url-text">Đang tải...</div>
+      </div>
     </div>
-    <div class="lan-text">
-      <div class="lan-title">📱 Khách truy cập bằng điện thoại</div>
-      <div class="lan-hint">Kết nối cùng WiFi rồi quét mã QR</div>
-      <div class="lan-url" id="lan-url-text">Đang tải...</div>
+
+    <!-- Bước 1: Nhập SĐT + Mã hóa đơn -->
+    <div id="step-phone">
+      <div class="card">
+        <div class="card-icon">🧾</div>
+        <h2>Xác nhận hóa đơn</h2>
+        <p>Nhập SĐT <strong style="color:#FFD700">và</strong> mã hóa đơn để được quay thưởng</p>
+        <input type="tel" id="phone-input" placeholder="Số điện thoại (VD: 0901 234 567)" maxlength="11" autocomplete="off" />
+        <input type="text" id="invoice-input" placeholder="Mã hóa đơn (VD: HD001234)" maxlength="30" autocomplete="off" style="text-transform:uppercase" />
+        <button class="btn btn-primary" id="check-btn">🎯 Xác nhận &amp; Quay thưởng</button>
+        <div id="phone-msg"></div>
+      </div>
+    </div>
+
+    <!-- Bước 2: Vòng quay -->
+    <div id="step-wheel" class="hidden">
+      <div id="cust-badge" class="badge"></div>
+      <div class="wheel-wrapper">
+        <div class="pointer"></div>
+        <canvas id="wheel-canvas"></canvas>
+        <button id="spin-btn">QUAY</button>
+      </div>
+      <div id="inv-badge" class="badge" style="font-size:0.82rem"></div>
     </div>
   </div>
 
-  <!-- Bước 1: Nhập SĐT + Mã hóa đơn -->
-  <div id="step-phone">
+  <!-- Section: Kiểm tra điểm tích lũy -->
+  <div id="section-loyalty" class="hidden">
     <div class="card">
-      <div class="card-icon">🧾</div>
-      <h2>Xác nhận hóa đơn</h2>
-      <p>Nhập SĐT <strong style="color:#FFD700">và</strong> mã hóa đơn để được quay thưởng</p>
-      <input type="tel" id="phone-input" placeholder="Số điện thoại (VD: 0901 234 567)" maxlength="11" autocomplete="off" />
-      <input type="text" id="invoice-input" placeholder="Mã hóa đơn (VD: HD001234)" maxlength="30" autocomplete="off" style="text-transform:uppercase" />
-      <button class="btn btn-primary" id="check-btn">🎯 Xác nhận &amp; Quay thưởng</button>
-      <div id="phone-msg"></div>
+      <div class="card-icon">🏆</div>
+      <h2>Kiểm Tra Điểm Tích Lũy</h2>
+      <p>Nhập số điện thoại để xem điểm tích lũy của bạn</p>
+      <input type="tel" id="loyalty-phone-input" placeholder="Số điện thoại (VD: 0901 234 567)" maxlength="11" autocomplete="off" />
+      <button class="btn btn-primary" id="loyalty-check-btn">🔍 Kiểm tra điểm</button>
+      <div id="loyalty-msg"></div>
+      <div id="loyalty-result" class="loyalty-result-box hidden">
+        <div class="loyalty-pts-num" id="loy-points">0</div>
+        <div class="loyalty-pts-lbl">điểm tích lũy</div>
+        <div class="loyalty-info">
+          <div class="loyalty-info-row"><span>👤 Khách hàng</span><strong id="loy-name">—</strong></div>
+          <div class="loyalty-info-row"><span>📞 Số điện thoại</span><strong id="loy-phone">—</strong></div>
+          <div class="loyalty-info-row"><span>💰 Tổng mua hàng</span><strong id="loy-total">—</strong></div>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <!-- Bước 2: Vòng quay -->
-  <div id="step-wheel" class="hidden">
-    <div id="cust-badge" class="badge"></div>
-    <div class="wheel-wrapper">
-      <div class="pointer"></div>
-      <canvas id="wheel-canvas"></canvas>
-      <button id="spin-btn">QUAY</button>
-    </div>
-    <div id="inv-badge" class="badge" style="font-size:0.82rem"></div>
   </div>
 </div>
 
@@ -1050,7 +1156,69 @@ async function initLanPanel() {
   } catch { /* server offline */ }
 }
 
+// ──── Tab switching ────
+function switchTab(tab) {
+  const isSpin = tab === 'spin';
+  document.getElementById('tab-spin').classList.toggle('active', isSpin);
+  document.getElementById('tab-loyalty').classList.toggle('active', !isSpin);
+  document.getElementById('section-spin').classList.toggle('hidden', !isSpin);
+  document.getElementById('section-loyalty').classList.toggle('hidden', isSpin);
+  if (isSpin) {
+    document.getElementById('loyalty-phone-input').value = '';
+    setLoyaltyMsg('', '');
+    document.getElementById('loyalty-result').classList.add('hidden');
+  }
+}
+
+// ──── Kiểm tra điểm tích lũy ────
+function setLoyaltyMsg(html, type) {
+  const el = document.getElementById('loyalty-msg');
+  el.innerHTML = html ? `<div class="msg msg-${type}">${html}</div>` : '';
+}
+
+async function checkLoyalty() {
+  const phone = document.getElementById('loyalty-phone-input').value.replace(/\s/g, '');
+  setLoyaltyMsg('', '');
+  document.getElementById('loyalty-result').classList.add('hidden');
+
+  if (!phone || phone.length < 9) {
+    setLoyaltyMsg('⚠️ Vui lòng nhập số điện thoại hợp lệ (ít nhất 9 chữ số).', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('loyalty-check-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Đang tra cứu...';
+
+  try {
+    const r    = await fetch(`${CFG.PROXY_URL}/api/loyalty?phone=${encodeURIComponent(phone)}`);
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Lỗi máy chủ');
+
+    if (!data.found) {
+      setLoyaltyMsg('❌ Không tìm thấy khách hàng với số điện thoại này trong KiotViet.', 'error');
+    } else {
+      document.getElementById('loy-points').textContent = (data.rewardPoint || 0).toLocaleString('vi-VN');
+      document.getElementById('loy-name').textContent   = data.name  || '—';
+      document.getElementById('loy-phone').textContent  = data.phone || phone;
+      document.getElementById('loy-total').textContent  = data.totalInvoiced
+        ? data.totalInvoiced.toLocaleString('vi-VN') + 'đ'
+        : '—';
+      document.getElementById('loyalty-result').classList.remove('hidden');
+    }
+  } catch (err) {
+    setLoyaltyMsg('❌ ' + (err.message || 'Lỗi không xác định.'), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Kiểm tra điểm';
+  }
+}
+
 // ──── Events ────
+document.getElementById('tab-spin').addEventListener('click', () => switchTab('spin'));
+document.getElementById('tab-loyalty').addEventListener('click', () => switchTab('loyalty'));
+document.getElementById('loyalty-check-btn').addEventListener('click', checkLoyalty);
+document.getElementById('loyalty-phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkLoyalty(); });
 document.getElementById('check-btn').addEventListener('click', checkPhone);
 document.getElementById('phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') { document.getElementById('invoice-input').focus(); } });
 document.getElementById('invoice-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPhone(); });
