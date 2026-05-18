@@ -576,18 +576,28 @@ const server = http.createServer(async (req, res) => {
       for (const inv of invoices) {
         const id    = inv.customerId || inv.customerCode;
         const name  = (inv.customerName || '').trim();
-        const phone = inv.customerTel || '';
         const total = inv.total || inv.totalPayment || 0;
         if (!id || !name || name === 'Khách lẻ') continue;
         if (map.has(id)) {
           map.get(id).total += total;
         } else {
-          map.set(id, { name, phone: maskPhone(phone), total });
+          map.set(id, { id, name, phone: '', total });
         }
       }
-      const top = [...map.values()]
+
+      // Lấy top 10 rồi fetch SĐT song song từ /customers/{id}
+      const top10 = [...map.values()]
         .sort((a, b) => b.total - a.total)
         .slice(0, 10);
+
+      await Promise.all(top10.map(async (c) => {
+        try {
+          const detail = await getCustomerDetail(c.id);
+          c.phone = maskPhone(detail.contactNumber || detail.mobilePhone || '');
+        } catch { c.phone = ''; }
+      }));
+
+      const top = top10.map(({ id: _id, ...rest }) => rest);
       console.log(`[TopCustomers] ${invoices.length} hoa don | ${map.size} khach | top ${top.length} | thang ${month}`);
       sendJSON(res, 200, { month, top });
     } catch (err) {
