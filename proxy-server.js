@@ -411,7 +411,11 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const c = customers[0];
-      console.log(`[Loyalty] SDT ${phone} -> ${c.name} | ${c.rewardPoint} diem`);
+      const groupName = c.groupName
+        || (Array.isArray(c.groups)               && c.groups[0]               && (c.groups[0].name || ''))
+        || (Array.isArray(c.customerGroupDetails) && c.customerGroupDetails[0] && (c.customerGroupDetails[0].groupName || ''))
+        || '';
+      console.log(`[Loyalty] SDT ${phone} -> ${c.name} | ${c.rewardPoint} diem | nhom: ${groupName || 'N/A'}`);
       sendJSON(res, 200, {
         found:         true,
         name:          c.name          || '',
@@ -419,6 +423,7 @@ const server = http.createServer(async (req, res) => {
         rewardPoint:   c.rewardPoint   || 0,
         totalInvoiced: c.totalInvoiced || 0,
         debt:          c.debt          || 0,
+        groupName,
       });
     } catch (err) {
       console.error('[Loyalty] Loi:', err.message);

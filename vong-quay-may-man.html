@@ -383,6 +383,72 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .loyalty-info-row strong { color: white; font-weight: 700; }
 
+/* ── Tier badge ── */
+.loy-tier-badge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-top: 16px;
+  text-align: left;
+}
+.tier-icon { font-size: 2.2rem; line-height: 1; flex-shrink: 0; }
+.tier-name { font-size: 1.08rem; font-weight: 900; color: white; letter-spacing: 0.3px; }
+.tier-sub  { font-size: 0.71rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+
+/* ── Tier benefits ── */
+.loy-tier-benefits {
+  background: rgba(0,0,0,0.22);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 10px;
+  text-align: left;
+}
+.tier-benefits-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.42);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 10px;
+}
+.tier-benefits-list {
+  list-style: none; padding: 0; margin: 0 0 10px;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.tier-benefits-list li {
+  font-size: 0.86rem; color: rgba(255,255,255,0.82);
+  padding-left: 20px; position: relative;
+}
+.tier-benefits-list li::before {
+  content: '✓'; position: absolute; left: 0;
+  color: #4ADE80; font-weight: 800;
+}
+
+/* ── Tier progress bar ── */
+.tier-progress-wrap { margin: 10px 0 8px; }
+.tier-progress-labels {
+  display: flex; justify-content: space-between;
+  font-size: 0.71rem; color: rgba(255,255,255,0.38); margin-bottom: 5px;
+}
+.tier-progress-bar {
+  height: 6px; background: rgba(255,255,255,0.09);
+  border-radius: 99px; overflow: hidden;
+}
+.tier-progress-fill {
+  height: 100%; border-radius: 99px;
+  transition: width 0.9s cubic-bezier(0.34,1.56,0.64,1);
+}
+.tier-next {
+  font-size: 0.81rem; color: rgba(255,255,255,0.42);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 9px; margin-top: 2px;
+}
+.tier-next strong { color: #FFD700; }
+.tier-max { color: #4ADE80 !important; font-weight: 600; }
+
 /* ── LAN / QR Panel ── */
 .lan-panel {
   width: 100%;
@@ -484,6 +550,8 @@ input::placeholder { color: rgba(255,255,255,0.3); }
           <div class="loyalty-info-row"><span>📞 Số điện thoại</span><strong id="loy-phone">—</strong></div>
           <div class="loyalty-info-row"><span>💰 Tổng mua hàng</span><strong id="loy-total">—</strong></div>
         </div>
+        <div id="loy-tier-badge" class="loy-tier-badge"></div>
+        <div id="loy-tier-benefits" class="loy-tier-benefits"></div>
       </div>
     </div>
   </div>
@@ -1156,6 +1224,112 @@ async function initLanPanel() {
   } catch { /* server offline */ }
 }
 
+// ──── Hạng thành viên ────
+// Ngưỡng tổng mua hàng (VND) — chỉnh theo chính sách cửa hàng
+const TIERS = [
+  {
+    id: 'diamond', name: 'Kim Cương', emoji: '💎',
+    color: '#22D3EE', gradFrom: '#0891B2', gradTo: '#164E63',
+    minAmount: 50_000_000,
+    benefits: [
+      'Chiết khấu 10% mọi đơn hàng',
+      'Tích lũy điểm x3',
+      'Quà tặng sinh nhật đặc biệt',
+      'Hỗ trợ ưu tiên 24/7',
+      'Miễn phí vận chuyển',
+    ],
+  },
+  {
+    id: 'gold', name: 'Vàng', emoji: '🥇',
+    color: '#FBBF24', gradFrom: '#D97706', gradTo: '#78350F',
+    minAmount: 20_000_000,
+    benefits: [
+      'Chiết khấu 5% mọi đơn hàng',
+      'Tích lũy điểm x2',
+      'Quà tặng sinh nhật',
+      'Hỗ trợ ưu tiên',
+    ],
+  },
+  {
+    id: 'silver', name: 'Bạc', emoji: '🥈',
+    color: '#94A3B8', gradFrom: '#64748B', gradTo: '#334155',
+    minAmount: 5_000_000,
+    benefits: [
+      'Chiết khấu 3% mọi đơn hàng',
+      'Tích lũy điểm',
+      'Ưu tiên hỗ trợ',
+    ],
+  },
+  {
+    id: 'member', name: 'Thành Viên', emoji: '🎫',
+    color: '#A78BFA', gradFrom: '#6D28D9', gradTo: '#3B0764',
+    minAmount: 0,
+    benefits: [
+      'Tích lũy điểm mỗi đơn hàng',
+      'Tham gia chương trình khuyến mãi',
+    ],
+  },
+];
+
+function getTier(groupName, totalInvoiced) {
+  if (groupName) {
+    const g = groupName.toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/đ/g, 'd');
+    if (/kim.?cuong|diamond|vip.?[13]|hang.?1/.test(g)) return TIERS[0];
+    if (/vang|gold|vip.?2|hang.?2/.test(g))             return TIERS[1];
+    if (/bac|silver|vip|hang.?3/.test(g))                return TIERS[2];
+  }
+  for (const t of TIERS) {
+    if ((totalInvoiced || 0) >= t.minAmount) return t;
+  }
+  return TIERS[TIERS.length - 1];
+}
+
+function renderTier(tier, totalInvoiced) {
+  const tierIdx  = TIERS.indexOf(tier);
+  const nextTier = tierIdx > 0 ? TIERS[tierIdx - 1] : null;
+
+  const badge = document.getElementById('loy-tier-badge');
+  badge.style.background  = `linear-gradient(135deg, ${tier.gradFrom}, ${tier.gradTo})`;
+  badge.style.borderColor = tier.color + '55';
+  badge.innerHTML = `
+    <div class="tier-icon">${tier.emoji}</div>
+    <div>
+      <div class="tier-name">${tier.name}</div>
+      <div class="tier-sub">Hạng thành viên</div>
+    </div>`;
+
+  let progressHtml = '';
+  if (nextTier) {
+    const needed = Math.max(0, nextTier.minAmount - (totalInvoiced || 0));
+    const range  = nextTier.minAmount - tier.minAmount;
+    const pct    = range > 0
+      ? Math.min(100, Math.round(((totalInvoiced || 0) - tier.minAmount) / range * 100))
+      : 100;
+    progressHtml = `
+      <div class="tier-progress-wrap">
+        <div class="tier-progress-labels">
+          <span>${tier.emoji} ${tier.name}</span>
+          <span>${nextTier.emoji} ${nextTier.name}</span>
+        </div>
+        <div class="tier-progress-bar">
+          <div class="tier-progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${tier.color},${nextTier.color})"></div>
+        </div>
+      </div>
+      <div class="tier-next">Mua thêm <strong>${needed.toLocaleString('vi-VN')}đ</strong> để lên hạng <strong>${nextTier.emoji} ${nextTier.name}</strong></div>`;
+  } else {
+    progressHtml = `<div class="tier-next tier-max">🎉 Bạn đang ở hạng cao nhất!</div>`;
+  }
+
+  document.getElementById('loy-tier-benefits').innerHTML = `
+    <div class="tier-benefits-title">Quyền lợi của bạn</div>
+    <ul class="tier-benefits-list">
+      ${tier.benefits.map(b => `<li>${b}</li>`).join('')}
+    </ul>
+    ${progressHtml}`;
+}
+
 // ──── Tab switching ────
 function switchTab(tab) {
   const isSpin = tab === 'spin';
@@ -1205,6 +1379,7 @@ async function checkLoyalty() {
         ? data.totalInvoiced.toLocaleString('vi-VN') + 'đ'
         : '—';
       document.getElementById('loyalty-result').classList.remove('hidden');
+      renderTier(getTier(data.groupName || '', data.totalInvoiced || 0), data.totalInvoiced || 0);
     }
   } catch (err) {
     setLoyaltyMsg('❌ ' + (err.message || 'Lỗi không xác định.'), 'error');
