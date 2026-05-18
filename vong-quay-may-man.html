@@ -1330,6 +1330,7 @@ async function checkLoyalty() {
 document.getElementById('tab-spin').addEventListener('click', () => switchTab('spin'));
 document.getElementById('tab-loyalty').addEventListener('click', () => switchTab('loyalty'));
 document.getElementById('tab-top').addEventListener('click', () => switchTab('top'));
+setInterval(() => { _topLoaded = false; if (!document.getElementById('section-top').classList.contains('hidden')) loadTopCustomers(); }, 5 * 60 * 1000);
 document.getElementById('loyalty-check-btn').addEventListener('click', checkLoyalty);
 document.getElementById('loyalty-phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkLoyalty(); });
 document.getElementById('check-btn').addEventListener('click', checkPhone);
