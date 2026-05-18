@@ -452,7 +452,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 // ════════════════════════════════════════════════════════════
 const CFG = {
   // --- Proxy server (chạy proxy-server.js trước) ---
-  PROXY_URL: 'http://localhost:3000',
+  PROXY_URL: 'https://vong-quay-production.up.railway.app',
 
   // --- Điều kiện ---
   MIN_AMOUNT: 200000,    // Số tiền tối thiểu để được quay (VND)
@@ -795,9 +795,9 @@ async function checkPhone() {
   } catch (err) {
     let msg = err.message || 'Lỗi không xác định.';
     if (msg.includes('fetch') || msg.includes('Network') || msg.includes('Failed')) {
-      msg = `Không kết nối được proxy server.<br>
-        <small>Hãy chạy lệnh: <code>node proxy-server.js</code><br>
-        rồi mở lại trang này. Proxy phải đang chạy tại <code>localhost:3000</code>.</small>`;
+      msg = `Không kết nối được server Railway.<br>
+        <small>Server: <code>https://vong-quay-production.up.railway.app</code><br>
+        Kiểm tra trạng thái deploy trên Railway dashboard.</small>`;
     }
     setMsg('❌ ' + msg, 'error');
     resetBtn();
