@@ -383,6 +383,45 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .loyalty-info-row strong { color: white; font-weight: 700; }
 
+/* ── Top Customers section ── */
+#section-top { width: 100%; max-width: 420px; }
+
+.top-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 16px;
+  padding: 20px 18px;
+}
+.top-card-title {
+  font-size: 1.05rem; font-weight: 900; color: #FFD700;
+  letter-spacing: 0.5px; text-align: center; margin-bottom: 3px;
+}
+.top-card-month {
+  font-size: 0.78rem; color: rgba(255,255,255,0.4);
+  text-align: center; margin-bottom: 18px;
+}
+.top-table { width: 100%; border-collapse: collapse; }
+.top-table th {
+  font-size: 0.65rem; font-weight: 700;
+  color: rgba(255,255,255,0.3); text-transform: uppercase;
+  letter-spacing: 0.8px; padding: 0 4px 10px;
+  text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.top-table th:first-child { width: 38px; text-align: center; padding-left: 0; }
+.top-table th:last-child  { text-align: right; padding-right: 0; }
+.top-row td {
+  padding: 9px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  vertical-align: middle;
+}
+.top-row:last-child td { border-bottom: none; }
+.top-rank { text-align: center; font-size: 1.3rem; width: 38px; padding-left: 0 !important; }
+.top-name  { font-size: 0.88rem; font-weight: 700; color: white; }
+.top-phone { font-size: 0.73rem; color: rgba(255,255,255,0.38); margin-top: 2px; font-family: monospace; }
+.top-total { text-align: right; font-weight: 800; color: #4ADE80; font-size: 0.88rem; white-space: nowrap; padding-right: 0 !important; }
+.rank-1 .top-name { color: #FFD700; }
+.rank-2 .top-name { color: #CBD5E1; }
+.rank-3 .top-name { color: #CD7C32; }
 
 /* ── LAN / QR Panel ── */
 .lan-panel {
@@ -427,6 +466,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   <div class="tab-bar">
     <button class="tab-btn active" id="tab-spin">🎡 Quay Thưởng</button>
     <button class="tab-btn" id="tab-loyalty">🏆 Điểm Tích Lũy</button>
+    <button class="tab-btn" id="tab-top">🏅 Top 10</button>
   </div>
 
   <!-- Section: Quay thưởng (tất cả nội dung hiện tại) -->
@@ -487,6 +527,28 @@ input::placeholder { color: rgba(255,255,255,0.3); }
           <div class="loyalty-info-row"><span>🏷️ Hạng thành viên</span><strong id="loy-group">—</strong></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Section: Top 10 khách hàng -->
+  <div id="section-top" class="hidden">
+    <div class="top-card">
+      <div class="top-card-title">🏅 TOP 10 CHI TIÊU NHIỀU NHẤT</div>
+      <div class="top-card-month" id="top-month">Tháng hiện tại</div>
+      <div id="top-loading" class="hidden" style="text-align:center;padding:20px 0;color:rgba(255,255,255,.45);font-size:.9rem">
+        <span class="spinner"></span> Đang tải...
+      </div>
+      <div id="top-msg"></div>
+      <table class="top-table" id="top-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Khách hàng</th>
+            <th>Chi tiêu</th>
+          </tr>
+        </thead>
+        <tbody id="top-tbody"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -1160,15 +1222,59 @@ async function initLanPanel() {
 
 // ──── Tab switching ────
 function switchTab(tab) {
-  const isSpin = tab === 'spin';
-  document.getElementById('tab-spin').classList.toggle('active', isSpin);
-  document.getElementById('tab-loyalty').classList.toggle('active', !isSpin);
-  document.getElementById('section-spin').classList.toggle('hidden', !isSpin);
-  document.getElementById('section-loyalty').classList.toggle('hidden', isSpin);
-  if (isSpin) {
+  ['spin', 'loyalty', 'top'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
+  });
+  document.body.style.overflowY = tab === 'top' ? 'auto' : 'hidden';
+  if (tab === 'spin') {
     document.getElementById('loyalty-phone-input').value = '';
     setLoyaltyMsg('', '');
     document.getElementById('loyalty-result').classList.add('hidden');
+  }
+  if (tab === 'top') loadTopCustomers();
+}
+
+// ──── Top 10 khách hàng ────
+let _topLoaded = false;
+async function loadTopCustomers() {
+  if (_topLoaded) return;
+  _topLoaded = true;
+
+  const loadEl = document.getElementById('top-loading');
+  const msgEl  = document.getElementById('top-msg');
+  const tbody  = document.getElementById('top-tbody');
+
+  loadEl.classList.remove('hidden');
+  msgEl.innerHTML  = '';
+  tbody.innerHTML  = '';
+
+  try {
+    const r    = await fetch(`${CFG.PROXY_URL}/api/top-customers`);
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Lỗi máy chủ');
+
+    if (data.month) document.getElementById('top-month').textContent = 'Tháng ' + data.month;
+
+    if (!data.top || !data.top.length) {
+      msgEl.innerHTML = '<div class="msg msg-info" style="margin-top:12px">Chưa có dữ liệu hóa đơn tháng này.</div>';
+      return;
+    }
+
+    const medals = ['🥇', '🥈', '🥉'];
+    tbody.innerHTML = data.top.map((c, i) => `
+      <tr class="top-row rank-${i + 1}">
+        <td class="top-rank">${medals[i] || (i + 1)}</td>
+        <td>
+          <div class="top-name">${c.name}</div>
+          ${c.phone ? `<div class="top-phone">${c.phone}</div>` : ''}
+        </td>
+        <td class="top-total">${c.total.toLocaleString('vi-VN')}đ</td>
+      </tr>`).join('');
+  } catch (err) {
+    msgEl.innerHTML = `<div class="msg msg-error" style="margin-top:12px">❌ ${err.message}</div>`;
+  } finally {
+    loadEl.classList.add('hidden');
   }
 }
 
@@ -1220,6 +1326,7 @@ async function checkLoyalty() {
 // ──── Events ────
 document.getElementById('tab-spin').addEventListener('click', () => switchTab('spin'));
 document.getElementById('tab-loyalty').addEventListener('click', () => switchTab('loyalty'));
+document.getElementById('tab-top').addEventListener('click', () => switchTab('top'));
 document.getElementById('loyalty-check-btn').addEventListener('click', checkLoyalty);
 document.getElementById('loyalty-phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkLoyalty(); });
 document.getElementById('check-btn').addEventListener('click', checkPhone);

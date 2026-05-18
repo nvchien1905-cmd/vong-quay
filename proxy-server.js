@@ -228,6 +228,38 @@ async function getInvoices(phone) {
   return data.data || [];
 }
 
+async function getMonthlyInvoices() {
+  const token = await getToken();
+  const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+  const y     = now.getFullYear();
+  const m     = now.getMonth();
+  const from  = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+  const lastD = new Date(y, m + 1, 0).getDate();
+  const to    = `${y}-${String(m + 1).padStart(2, '0')}-${String(lastD).padStart(2, '0')}`;
+
+  const all = [];
+  let currentItem = 0;
+  const pageSize  = 100;
+  while (true) {
+    const data = await httpsRequest({
+      hostname: 'public.kiotapi.com',
+      path:     `/invoices?pageSize=${pageSize}&currentItem=${currentItem}&status=1&fromPurchaseDate=${from}&toPurchaseDate=${to}`,
+      method:   'GET',
+      headers:  { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
+    });
+    const items = data.data || [];
+    all.push(...items);
+    if (items.length < pageSize || all.length >= 2000) break;
+    currentItem += pageSize;
+  }
+  return { invoices: all, month: `${String(m + 1).padStart(2, '0')}/${y}` };
+}
+
+function maskPhone(phone) {
+  if (!phone || phone.length < 8) return phone;
+  return phone.slice(0, 4) + '***' + phone.slice(-3);
+}
+
 async function getCustomerByPhone(phone) {
   const token = await getToken();
   const data  = await httpsRequest({
@@ -530,6 +562,36 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (err) {
       console.error('[Loyalty] Loi:', err.message);
+      sendJSON(res, 500, { error: err.message });
+    }
+    return;
+  }
+
+  // GET /api/top-customers — top 10 khách chi tiêu nhiều nhất tháng ──
+  if (url.pathname === '/api/top-customers' && req.method === 'GET') {
+    console.log('[TopCustomers] Dang lay hoa don thang nay...');
+    try {
+      const { invoices, month } = await getMonthlyInvoices();
+      const map = new Map();
+      for (const inv of invoices) {
+        const id    = inv.customerId || inv.customerCode;
+        const name  = (inv.customerName || '').trim();
+        const phone = inv.customerTel || '';
+        const total = inv.total || inv.totalPayment || 0;
+        if (!id || !name || name === 'Khách lẻ') continue;
+        if (map.has(id)) {
+          map.get(id).total += total;
+        } else {
+          map.set(id, { name, phone: maskPhone(phone), total });
+        }
+      }
+      const top = [...map.values()]
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 10);
+      console.log(`[TopCustomers] ${invoices.length} hoa don | ${map.size} khach | top ${top.length} | thang ${month}`);
+      sendJSON(res, 200, { month, top });
+    } catch (err) {
+      console.error('[TopCustomers] Loi:', err.message);
       sendJSON(res, 500, { error: err.message });
     }
     return;
