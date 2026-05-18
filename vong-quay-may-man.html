@@ -449,6 +449,28 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 .tier-next strong { color: #FFD700; }
 .tier-max { color: #4ADE80 !important; font-weight: 600; }
 
+/* ── Danh sách khuyến mãi (màu vàng) ── */
+.tier-promo-title {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: rgba(251,191,36,0.6);
+  margin: 14px 0 10px;
+}
+.tier-promo-list {
+  list-style: none; padding: 0; margin: 0 0 4px;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.tier-promo-list li {
+  font-size: 0.86rem; color: #FCD34D;
+  padding-left: 22px; position: relative;
+}
+.tier-promo-list li::before {
+  content: '🎁'; position: absolute; left: 0; font-size: 0.76rem; top: 1px;
+}
+.no-promo-note {
+  font-size: 0.75rem; color: rgba(255,255,255,0.22);
+  margin-top: 10px; font-style: italic;
+}
+
 /* ── KiotViet group badge ── */
 .loy-kv-group {
   display: flex;
@@ -698,6 +720,88 @@ const CFG = {
     { label: 'Giảm 100.000đ',    emoji: '👑', color: '#991B1B', weight: 1,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
   ],
 };
+
+// ════════════════════════════════════════════════════════════
+//  NHÓM KHÁCH HÀNG — Thêm/sửa theo nhóm trong KiotViet của bạn
+// ════════════════════════════════════════════════════════════
+//  groupName   : Tên nhóm CHÍNH XÁC trong KiotViet (so khớp không phân biệt hoa/thường)
+//  label       : Tên hiển thị cho khách
+//  emoji/color : Giao diện badge
+//  discount    : % chiết khấu cố định (0 = không có)
+//  benefits    : Quyền lợi thường xuyên (cập nhật khi chính sách thay đổi)
+//  promotions  : Khuyến mãi đang chạy (cập nhật thường xuyên, để [] khi không có)
+//  _default    : true → dùng khi khách không thuộc nhóm nào (giữ 1 entry duy nhất)
+// ════════════════════════════════════════════════════════════
+const CUSTOMER_GROUPS = [
+  {
+    groupName:  'Kim Cương',
+    label:      'Kim Cương',     emoji: '💎',
+    color: '#22D3EE', gradFrom: '#0891B2', gradTo: '#164E63',
+    discount: 10,
+    benefits: [
+      'Chiết khấu 10% mọi đơn hàng',
+      'Tích lũy điểm x3',
+      'Quà tặng sinh nhật đặc biệt',
+      'Hỗ trợ ưu tiên 24/7',
+      'Miễn phí vận chuyển',
+    ],
+    promotions: [
+      // 'Tháng 5: Giảm thêm 5% đơn từ 500.000đ',
+    ],
+  },
+  {
+    groupName:  'Vàng',
+    label:      'Vàng',          emoji: '🥇',
+    color: '#FBBF24', gradFrom: '#D97706', gradTo: '#78350F',
+    discount: 5,
+    benefits: [
+      'Chiết khấu 5% mọi đơn hàng',
+      'Tích lũy điểm x2',
+      'Quà tặng sinh nhật',
+      'Ưu tiên hỗ trợ',
+    ],
+    promotions: [],
+  },
+  {
+    groupName:  'Bạc',
+    label:      'Bạc',           emoji: '🥈',
+    color: '#94A3B8', gradFrom: '#64748B', gradTo: '#334155',
+    discount: 3,
+    benefits: [
+      'Chiết khấu 3% mọi đơn hàng',
+      'Tích lũy điểm',
+      'Ưu tiên hỗ trợ',
+    ],
+    promotions: [],
+  },
+  {
+    groupName:  'Hội viên Mamakids',   // ← tên nhóm thực trong KiotViet của bạn
+    label:      'Hội Viên',    emoji: '🌟',
+    color: '#A78BFA', gradFrom: '#6D28D9', gradTo: '#3B0764',
+    discount: 0,
+    benefits: [
+      'Tích lũy điểm mỗi đơn hàng',
+      'Nhận thông báo khuyến mãi ưu tiên',
+      'Tham gia sự kiện dành riêng cho hội viên',
+    ],
+    promotions: [
+      // 'Sinh nhật bé: Tặng quà khi mua từ 300.000đ',
+    ],
+  },
+
+  // ── Nhóm mặc định — hiển thị khi khách không thuộc nhóm nào ─
+  {
+    groupName: '_default', _default: true,
+    label:      'Khách Hàng',   emoji: '🎫',
+    color: '#6B7280', gradFrom: '#374151', gradTo: '#1F2937',
+    discount: 0,
+    benefits: [
+      'Tích lũy điểm mỗi đơn hàng',
+      'Tham gia chương trình khuyến mãi',
+    ],
+    promotions: [],
+  },
+];
 // ════════════════════════════════════════════════════════════
 
 // ──── KiotViet API (qua proxy server) ────
@@ -1272,131 +1376,56 @@ async function initLanPanel() {
   } catch { /* server offline */ }
 }
 
-// ──── Hạng thành viên ────
-// Ngưỡng tổng mua hàng (VND) — chỉnh theo chính sách cửa hàng
-const TIERS = [
-  {
-    id: 'diamond', name: 'Kim Cương', emoji: '💎',
-    color: '#22D3EE', gradFrom: '#0891B2', gradTo: '#164E63',
-    minAmount: 50_000_000,
-    benefits: [
-      'Chiết khấu 10% mọi đơn hàng',
-      'Tích lũy điểm x3',
-      'Quà tặng sinh nhật đặc biệt',
-      'Hỗ trợ ưu tiên 24/7',
-      'Miễn phí vận chuyển',
-    ],
-  },
-  {
-    id: 'gold', name: 'Vàng', emoji: '🥇',
-    color: '#FBBF24', gradFrom: '#D97706', gradTo: '#78350F',
-    minAmount: 20_000_000,
-    benefits: [
-      'Chiết khấu 5% mọi đơn hàng',
-      'Tích lũy điểm x2',
-      'Quà tặng sinh nhật',
-      'Hỗ trợ ưu tiên',
-    ],
-  },
-  {
-    id: 'silver', name: 'Bạc', emoji: '🥈',
-    color: '#94A3B8', gradFrom: '#64748B', gradTo: '#334155',
-    minAmount: 5_000_000,
-    benefits: [
-      'Chiết khấu 3% mọi đơn hàng',
-      'Tích lũy điểm',
-      'Ưu tiên hỗ trợ',
-    ],
-  },
-  {
-    id: 'member', name: 'Thành Viên', emoji: '🎫',
-    color: '#A78BFA', gradFrom: '#6D28D9', gradTo: '#3B0764',
-    minAmount: 0,
-    benefits: [
-      'Tích lũy điểm mỗi đơn hàng',
-      'Tham gia chương trình khuyến mãi',
-    ],
-  },
-];
-
-function getTier(groupName, totalInvoiced) {
-  if (groupName) {
-    const g = groupName.toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '')
-      .replace(/đ/g, 'd');
-    if (/kim.?cuong|diamond|vip.?[13]|hang.?1/.test(g)) return TIERS[0];
-    if (/vang|gold|vip.?2|hang.?2/.test(g))             return TIERS[1];
-    if (/bac|silver|vip|hang.?3/.test(g))                return TIERS[2];
+// ──── Nhóm khách hàng — so khớp groupName từ KiotViet với CUSTOMER_GROUPS ────
+function getGroup(kvGroupName) {
+  if (kvGroupName) {
+    const needle = kvGroupName.trim().toLowerCase();
+    // 1. So khớp chính xác (không phân biệt hoa/thường)
+    const exact = CUSTOMER_GROUPS.find(g =>
+      !g._default && g.groupName.trim().toLowerCase() === needle
+    );
+    if (exact) return exact;
+    // 2. So khớp một phần (tên KiotViet chứa tên config hoặc ngược lại)
+    const partial = CUSTOMER_GROUPS.find(g => {
+      if (g._default) return false;
+      const hay = g.groupName.trim().toLowerCase();
+      return needle.includes(hay) || hay.includes(needle);
+    });
+    if (partial) return partial;
   }
-  for (const t of TIERS) {
-    if ((totalInvoiced || 0) >= t.minAmount) return t;
-  }
-  return TIERS[TIERS.length - 1];
+  return CUSTOMER_GROUPS.find(g => g._default) || CUSTOMER_GROUPS[CUSTOMER_GROUPS.length - 1];
 }
 
-// kvDiscount: số thực từ KiotViet (null = không có dữ liệu)
-function renderTier(tier, totalInvoiced, kvDiscount) {
-  const tierIdx  = TIERS.indexOf(tier);
-  const nextTier = tierIdx > 0 ? TIERS[tierIdx - 1] : null;
-
+function renderGroup(group) {
+  // Badge hạng
   const badge = document.getElementById('loy-tier-badge');
-  badge.style.background  = `linear-gradient(135deg, ${tier.gradFrom}, ${tier.gradTo})`;
-  badge.style.borderColor = tier.color + '55';
-  const tierSource = (kvDiscount !== null && kvDiscount !== undefined)
-    ? '<span class="benefit-source src-kv">KiotViet</span>'
-    : '<span class="benefit-source src-est">Ước tính</span>';
+  badge.style.background  = `linear-gradient(135deg, ${group.gradFrom}, ${group.gradTo})`;
+  badge.style.borderColor = group.color + '55';
+  const discountTag = group.discount > 0
+    ? `<span style="font-size:.8rem;font-weight:800;color:${group.color};margin-left:7px;opacity:.9">–${group.discount}%</span>`
+    : '';
   badge.innerHTML = `
-    <div class="tier-icon">${tier.emoji}</div>
+    <div class="tier-icon">${group.emoji}</div>
     <div>
-      <div class="tier-name">${tier.name} ${tierSource}</div>
+      <div class="tier-name">${group.label}${discountTag}</div>
       <div class="tier-sub">Hạng thành viên</div>
     </div>`;
 
-  // Xây danh sách quyền lợi — ưu tiên dữ liệu thực từ KiotViet
-  const benefits = tier.benefits.map((b, i) => {
-    // Dòng đầu thường là chiết khấu — thay bằng số thực nếu có
-    if (i === 0 && kvDiscount !== null && kvDiscount !== undefined && b.toLowerCase().includes('chiết khấu')) {
-      if (kvDiscount > 0) {
-        return `<li>Chiết khấu <strong>${kvDiscount}%</strong> mọi đơn hàng <span class="benefit-source src-kv">KiotViet</span></li>`;
-      } else {
-        return `<li>${b} <span class="benefit-source src-est">Ước tính</span></li>`;
-      }
-    }
-    return `<li>${b}</li>`;
-  });
-
-  // Ghi chú nếu không có chiết khấu thực
-  const noteHtml = (kvDiscount === null || kvDiscount === undefined)
-    ? `<p style="font-size:.76rem;color:rgba(255,255,255,.3);margin-top:6px">* Quyền lợi ước tính – tham khảo nhân viên để biết chính xác</p>`
+  // Quyền lợi
+  const bListHtml = group.benefits && group.benefits.length
+    ? `<ul class="tier-benefits-list">${group.benefits.map(b => `<li>${b}</li>`).join('')}</ul>`
     : '';
 
-  let progressHtml = '';
-  if (nextTier) {
-    const needed = Math.max(0, nextTier.minAmount - (totalInvoiced || 0));
-    const range  = nextTier.minAmount - tier.minAmount;
-    const pct    = range > 0
-      ? Math.min(100, Math.round(((totalInvoiced || 0) - tier.minAmount) / range * 100))
-      : 100;
-    progressHtml = `
-      <div class="tier-progress-wrap">
-        <div class="tier-progress-labels">
-          <span>${tier.emoji} ${tier.name}</span>
-          <span>${nextTier.emoji} ${nextTier.name}</span>
-        </div>
-        <div class="tier-progress-bar">
-          <div class="tier-progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${tier.color},${nextTier.color})"></div>
-        </div>
-      </div>
-      <div class="tier-next">Mua thêm <strong>${needed.toLocaleString('vi-VN')}đ</strong> để lên hạng <strong>${nextTier.emoji} ${nextTier.name}</strong></div>`;
-  } else {
-    progressHtml = `<div class="tier-next tier-max">🎉 Bạn đang ở hạng cao nhất!</div>`;
-  }
+  // Khuyến mãi
+  const promoHtml = group.promotions && group.promotions.length
+    ? `<div class="tier-promo-title">Khuyến mãi đang áp dụng</div>
+       <ul class="tier-promo-list">${group.promotions.map(p => `<li>${p}</li>`).join('')}</ul>`
+    : `<p class="no-promo-note">Không có khuyến mãi đặc biệt hiện tại</p>`;
 
   document.getElementById('loy-tier-benefits').innerHTML = `
     <div class="tier-benefits-title">Quyền lợi của bạn</div>
-    <ul class="tier-benefits-list">${benefits.join('')}</ul>
-    ${noteHtml}
-    ${progressHtml}`;
+    ${bListHtml}
+    ${promoHtml}`;
 }
 
 // ──── Tab switching ────
@@ -1449,13 +1478,15 @@ async function checkLoyalty() {
         ? data.totalInvoiced.toLocaleString('vi-VN') + 'đ'
         : '—';
 
-      // Hiển thị nhóm KiotViet thực tế (nếu có)
-      const kvGroupEl   = document.getElementById('loy-kv-group');
-      const kvDiscWrap  = document.getElementById('loy-kv-discount-wrap');
+      // So khớp nhóm KiotViet với CUSTOMER_GROUPS config
+      const group      = getGroup(data.groupName || '');
+      const kvGroupEl  = document.getElementById('loy-kv-group');
+      const kvDiscWrap = document.getElementById('loy-kv-discount-wrap');
+
       if (data.groupName) {
         document.getElementById('loy-kv-name').textContent = data.groupName;
-        if (data.groupDiscount !== null && data.groupDiscount !== undefined) {
-          document.getElementById('loy-kv-discount').textContent = `-${data.groupDiscount}%`;
+        if (!group._default && group.discount > 0) {
+          document.getElementById('loy-kv-discount').textContent = `–${group.discount}%`;
           kvDiscWrap.classList.remove('hidden');
         } else {
           kvDiscWrap.classList.add('hidden');
@@ -1466,8 +1497,7 @@ async function checkLoyalty() {
       }
 
       document.getElementById('loyalty-result').classList.remove('hidden');
-      const tier = getTier(data.groupName || '', data.totalInvoiced || 0);
-      renderTier(tier, data.totalInvoiced || 0, data.groupDiscount);
+      renderGroup(group);
     }
   } catch (err) {
     setLoyaltyMsg('❌ ' + (err.message || 'Lỗi không xác định.'), 'error');
