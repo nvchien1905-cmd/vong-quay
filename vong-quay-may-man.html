@@ -449,6 +449,43 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 .tier-next strong { color: #FFD700; }
 .tier-max { color: #4ADE80 !important; font-weight: 600; }
 
+/* ── KiotViet group badge ── */
+.loy-kv-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 16px;
+  border-radius: 11px;
+  background: rgba(59,130,246,0.09);
+  border: 1px solid rgba(59,130,246,0.28);
+  margin-top: 14px;
+}
+.loy-kv-label {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: rgba(255,255,255,0.38);
+  margin-bottom: 2px;
+}
+.loy-kv-name { font-size: 0.92rem; font-weight: 800; color: #93C5FD; }
+.loy-kv-discount {
+  font-size: 1.3rem; font-weight: 900; color: #4ADE80;
+  white-space: nowrap; flex-shrink: 0;
+}
+.loy-kv-discount small {
+  font-size: 0.7rem; font-weight: 600; display: block;
+  text-align: center; color: rgba(255,255,255,0.38); margin-top: 1px;
+}
+
+/* ── Source tag ── */
+.benefit-source {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;
+  padding: 1px 5px; border-radius: 4px; margin-left: 5px;
+  vertical-align: middle;
+}
+.src-kv  { background: rgba(59,130,246,0.2); color: #93C5FD; }
+.src-est { background: rgba(255,215,0,0.12); color: #FCD34D; }
+
 /* ── LAN / QR Panel ── */
 .lan-panel {
   width: 100%;
@@ -549,6 +586,17 @@ input::placeholder { color: rgba(255,255,255,0.3); }
           <div class="loyalty-info-row"><span>👤 Khách hàng</span><strong id="loy-name">—</strong></div>
           <div class="loyalty-info-row"><span>📞 Số điện thoại</span><strong id="loy-phone">—</strong></div>
           <div class="loyalty-info-row"><span>💰 Tổng mua hàng</span><strong id="loy-total">—</strong></div>
+        </div>
+        <!-- Nhóm KH thực tế từ KiotViet -->
+        <div id="loy-kv-group" class="loy-kv-group hidden">
+          <div>
+            <div class="loy-kv-label">Nhóm KiotViet</div>
+            <div class="loy-kv-name" id="loy-kv-name">—</div>
+          </div>
+          <div id="loy-kv-discount-wrap" class="hidden">
+            <div class="loy-kv-discount" id="loy-kv-discount">—</div>
+            <small style="font-size:.65rem;color:rgba(255,255,255,.35);text-align:center">chiết khấu</small>
+          </div>
         </div>
         <div id="loy-tier-badge" class="loy-tier-badge"></div>
         <div id="loy-tier-benefits" class="loy-tier-benefits"></div>
@@ -1286,19 +1334,41 @@ function getTier(groupName, totalInvoiced) {
   return TIERS[TIERS.length - 1];
 }
 
-function renderTier(tier, totalInvoiced) {
+// kvDiscount: số thực từ KiotViet (null = không có dữ liệu)
+function renderTier(tier, totalInvoiced, kvDiscount) {
   const tierIdx  = TIERS.indexOf(tier);
   const nextTier = tierIdx > 0 ? TIERS[tierIdx - 1] : null;
 
   const badge = document.getElementById('loy-tier-badge');
   badge.style.background  = `linear-gradient(135deg, ${tier.gradFrom}, ${tier.gradTo})`;
   badge.style.borderColor = tier.color + '55';
+  const tierSource = (kvDiscount !== null && kvDiscount !== undefined)
+    ? '<span class="benefit-source src-kv">KiotViet</span>'
+    : '<span class="benefit-source src-est">Ước tính</span>';
   badge.innerHTML = `
     <div class="tier-icon">${tier.emoji}</div>
     <div>
-      <div class="tier-name">${tier.name}</div>
+      <div class="tier-name">${tier.name} ${tierSource}</div>
       <div class="tier-sub">Hạng thành viên</div>
     </div>`;
+
+  // Xây danh sách quyền lợi — ưu tiên dữ liệu thực từ KiotViet
+  const benefits = tier.benefits.map((b, i) => {
+    // Dòng đầu thường là chiết khấu — thay bằng số thực nếu có
+    if (i === 0 && kvDiscount !== null && kvDiscount !== undefined && b.toLowerCase().includes('chiết khấu')) {
+      if (kvDiscount > 0) {
+        return `<li>Chiết khấu <strong>${kvDiscount}%</strong> mọi đơn hàng <span class="benefit-source src-kv">KiotViet</span></li>`;
+      } else {
+        return `<li>${b} <span class="benefit-source src-est">Ước tính</span></li>`;
+      }
+    }
+    return `<li>${b}</li>`;
+  });
+
+  // Ghi chú nếu không có chiết khấu thực
+  const noteHtml = (kvDiscount === null || kvDiscount === undefined)
+    ? `<p style="font-size:.76rem;color:rgba(255,255,255,.3);margin-top:6px">* Quyền lợi ước tính – tham khảo nhân viên để biết chính xác</p>`
+    : '';
 
   let progressHtml = '';
   if (nextTier) {
@@ -1324,9 +1394,8 @@ function renderTier(tier, totalInvoiced) {
 
   document.getElementById('loy-tier-benefits').innerHTML = `
     <div class="tier-benefits-title">Quyền lợi của bạn</div>
-    <ul class="tier-benefits-list">
-      ${tier.benefits.map(b => `<li>${b}</li>`).join('')}
-    </ul>
+    <ul class="tier-benefits-list">${benefits.join('')}</ul>
+    ${noteHtml}
     ${progressHtml}`;
 }
 
@@ -1341,6 +1410,7 @@ function switchTab(tab) {
     document.getElementById('loyalty-phone-input').value = '';
     setLoyaltyMsg('', '');
     document.getElementById('loyalty-result').classList.add('hidden');
+    document.getElementById('loy-kv-group').classList.add('hidden');
   }
 }
 
@@ -1378,8 +1448,26 @@ async function checkLoyalty() {
       document.getElementById('loy-total').textContent  = data.totalInvoiced
         ? data.totalInvoiced.toLocaleString('vi-VN') + 'đ'
         : '—';
+
+      // Hiển thị nhóm KiotViet thực tế (nếu có)
+      const kvGroupEl   = document.getElementById('loy-kv-group');
+      const kvDiscWrap  = document.getElementById('loy-kv-discount-wrap');
+      if (data.groupName) {
+        document.getElementById('loy-kv-name').textContent = data.groupName;
+        if (data.groupDiscount !== null && data.groupDiscount !== undefined) {
+          document.getElementById('loy-kv-discount').textContent = `-${data.groupDiscount}%`;
+          kvDiscWrap.classList.remove('hidden');
+        } else {
+          kvDiscWrap.classList.add('hidden');
+        }
+        kvGroupEl.classList.remove('hidden');
+      } else {
+        kvGroupEl.classList.add('hidden');
+      }
+
       document.getElementById('loyalty-result').classList.remove('hidden');
-      renderTier(getTier(data.groupName || '', data.totalInvoiced || 0), data.totalInvoiced || 0);
+      const tier = getTier(data.groupName || '', data.totalInvoiced || 0);
+      renderTier(tier, data.totalInvoiced || 0, data.groupDiscount);
     }
   } catch (err) {
     setLoyaltyMsg('❌ ' + (err.message || 'Lỗi không xác định.'), 'error');

@@ -232,7 +232,7 @@ async function getCustomerByPhone(phone) {
   const token = await getToken();
   const data  = await httpsRequest({
     hostname: 'public.kiotapi.com',
-    path:     `/customers?contactNumber=${encodeURIComponent(phone)}&pageSize=5`,
+    path:     `/customers?contactNumber=${encodeURIComponent(phone)}&pageSize=5&includeCustomerGroup=true`,
     method:   'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -240,6 +240,49 @@ async function getCustomerByPhone(phone) {
     },
   });
   return data.data || [];
+}
+
+// Cache nhóm khách hàng 30 phút (ít thay đổi)
+let _groupsCache = null, _groupsCacheAt = 0;
+
+async function getCustomerGroups() {
+  if (_groupsCache && Date.now() - _groupsCacheAt < 30 * 60 * 1000) return _groupsCache;
+  const token = await getToken();
+  const data  = await httpsRequest({
+    hostname: 'public.kiotapi.com',
+    path:     '/customergroups',
+    method:   'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Retailer':      CFG.RETAILER,
+    },
+  });
+  // API có thể trả về array trực tiếp hoặc { data: [...] }
+  _groupsCache   = Array.isArray(data) ? data : (data.data || []);
+  _groupsCacheAt = Date.now();
+  console.log(`[Groups] Loaded ${_groupsCache.length} customer groups`);
+  return _groupsCache;
+}
+
+// Trích xuất groupId và groupName từ customer object (nhiều format khác nhau)
+function extractGroupInfo(c) {
+  // Format 1: field groups là string "Vàng, VIP"
+  if (typeof c.groups === 'string' && c.groups.trim()) {
+    return { groupId: c.groupId || null, groupName: c.groups.split(',')[0].trim() };
+  }
+  // Format 2: customerGroupDetails là array [{ groupId, groupName }]
+  if (Array.isArray(c.customerGroupDetails) && c.customerGroupDetails.length) {
+    const g = c.customerGroupDetails[0];
+    return { groupId: g.groupId || g.id || null, groupName: g.groupName || g.name || '' };
+  }
+  // Format 3: groups là array [{ id, name }]
+  if (Array.isArray(c.groups) && c.groups.length) {
+    const g = c.groups[0];
+    return { groupId: g.id || null, groupName: g.name || '' };
+  }
+  // Format 4: field groupName trực tiếp
+  if (c.groupName) return { groupId: c.groupId || null, groupName: c.groupName };
+  return { groupId: null, groupName: '' };
 }
 
 // ──── HTTP Server ────
@@ -405,28 +448,70 @@ const server = http.createServer(async (req, res) => {
 
     console.log(`[Loyalty] SDT: ${phone}`);
     try {
-      const customers = await getCustomerByPhone(phone);
+      // Gọi song song: thông tin khách + danh sách nhóm
+      const [customers, allGroups] = await Promise.all([
+        getCustomerByPhone(phone),
+        getCustomerGroups().catch(err => {
+          console.warn('[Loyalty] Khong lay duoc customer groups:', err.message);
+          return [];
+        }),
+      ]);
+
       if (!customers.length) {
         sendJSON(res, 200, { found: false });
         return;
       }
+
       const c = customers[0];
-      const groupName = c.groupName
-        || (Array.isArray(c.groups)               && c.groups[0]               && (c.groups[0].name || ''))
-        || (Array.isArray(c.customerGroupDetails) && c.customerGroupDetails[0] && (c.customerGroupDetails[0].groupName || ''))
-        || '';
-      console.log(`[Loyalty] SDT ${phone} -> ${c.name} | ${c.rewardPoint} diem | nhom: ${groupName || 'N/A'}`);
+      const { groupId, groupName } = extractGroupInfo(c);
+
+      // Tìm nhóm khớp trong allGroups để lấy discount
+      let matchedGroup = null;
+      if (groupId) {
+        matchedGroup = allGroups.find(g => g.id === groupId || String(g.id) === String(groupId));
+      }
+      if (!matchedGroup && groupName) {
+        matchedGroup = allGroups.find(g =>
+          g.name && g.name.trim().toLowerCase() === groupName.toLowerCase()
+        );
+      }
+
+      const groupDiscount = matchedGroup ? (matchedGroup.discount ?? null) : null;
+
+      console.log(`[Loyalty] SDT ${phone} -> ${c.name} | diem: ${c.rewardPoint} | nhom: "${groupName || 'N/A'}" | chiet khau: ${groupDiscount !== null ? groupDiscount + '%' : 'N/A'}`);
+
       sendJSON(res, 200, {
         found:         true,
         name:          c.name          || '',
         phone:         c.contactNumber || phone,
         rewardPoint:   c.rewardPoint   || 0,
         totalInvoiced: c.totalInvoiced || 0,
+        totalPoint:    c.totalPoint    || 0,
         debt:          c.debt          || 0,
+        groupId,
         groupName,
+        groupDiscount,
+        // Trả về toàn bộ nhóm để frontend có thể dùng
+        allGroups: allGroups.map(g => ({
+          id:       g.id,
+          name:     g.name     || '',
+          discount: g.discount ?? 0,
+        })),
       });
     } catch (err) {
       console.error('[Loyalty] Loi:', err.message);
+      sendJSON(res, 500, { error: err.message });
+    }
+    return;
+  }
+
+  // GET /api/customergroups — danh sách toàn bộ nhóm KH ───────
+  if (url.pathname === '/api/customergroups' && req.method === 'GET') {
+    try {
+      const groups = await getCustomerGroups();
+      sendJSON(res, 200, groups);
+    } catch (err) {
+      console.error('[Groups] Loi:', err.message);
       sendJSON(res, 500, { error: err.message });
     }
     return;
