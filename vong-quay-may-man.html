@@ -533,7 +533,10 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   <!-- Section: Top 10 khách hàng -->
   <div id="section-top" class="hidden">
     <div class="top-card">
-      <div class="top-card-title">🏅 TOP 10 CHI TIÊU NHIỀU NHẤT</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:3px">
+        <div class="top-card-title" style="margin-bottom:0">🏅 TOP 10 CHI TIÊU NHIỀU NHẤT</div>
+        <button id="top-refresh-btn" onclick="_topLoaded=false;loadTopCustomers()" title="Tải lại" style="background:none;border:1px solid rgba(255,215,0,0.3);border-radius:8px;color:rgba(255,215,0,0.7);font-size:1rem;padding:3px 8px;cursor:pointer;line-height:1">↻</button>
+      </div>
       <div class="top-card-month" id="top-month">Tháng hiện tại</div>
       <div id="top-loading" class="hidden" style="text-align:center;padding:20px 0;color:rgba(255,255,255,.45);font-size:.9rem">
         <span class="spinner"></span> Đang tải...
