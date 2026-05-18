@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vòng Quay May Mắn</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: #0f0f1a;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+#bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+.container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 20px;
+  width: 100%;
+}
+
+.store-header { text-align: center; }
+.store-header h1 {
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.store-header p { color: rgba(255,255,255,0.55); font-size: 0.9rem; margin-top: 6px; }
+
+/* Card */
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,215,0,0.22);
+  border-radius: 20px;
+  padding: 34px 30px;
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+.card-icon { font-size: 2.8rem; margin-bottom: 10px; }
+.card h2 { font-size: 1.35rem; color: #FFD700; margin-bottom: 6px; }
+.card > p { color: rgba(255,255,255,0.55); font-size: 0.88rem; margin-bottom: 22px; }
+
+/* Input */
+input {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,215,0,0.28);
+  border-radius: 12px;
+  color: white;
+  font-size: 1.1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 14px;
+}
+input:focus { border-color: #FFD700; }
+input::placeholder { color: rgba(255,255,255,0.3); }
+
+/* Buttons */
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed !important; transform: none !important; }
+.btn-primary {
+  background: linear-gradient(135deg, #FF6B35, #DC2626);
+  color: white;
+  box-shadow: 0 4px 20px rgba(255,107,53,0.35);
+  width: 100%;
+}
+.btn-primary:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255,107,53,0.55); }
+
+/* Messages */
+.msg { padding: 10px 14px; border-radius: 10px; font-size: 0.87rem; margin-top: 12px; line-height: 1.5; }
+.msg-error  { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.35);  color: #FCA5A5; }
+.msg-info   { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.35); color: #93C5FD; }
+
+/* Wheel section */
+#step-wheel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.badge {
+  background: rgba(255,215,0,0.09);
+  border: 1px solid rgba(255,215,0,0.28);
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.82);
+  text-align: center;
+}
+.badge strong { color: #FFD700; }
+
+/* Wheel wrapper */
+.wheel-wrapper { position: relative; }
+
+.pointer {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid #FFD700;
+  filter: drop-shadow(0 0 8px rgba(255,215,0,0.9));
+  z-index: 5;
+}
+
+#wheel-canvas { display: block; border-radius: 50%; }
+
+#spin-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFE566, #FF8C00);
+  border: 4px solid rgba(255,255,255,0.9);
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 0 22px rgba(255,215,0,0.55), inset 0 0 12px rgba(255,255,255,0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  letter-spacing: 1px;
+  z-index: 10;
+}
+#spin-btn:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 35px rgba(255,215,0,0.8); }
+#spin-btn.no-spin { opacity: 0.6; cursor: not-allowed; }
+#spin-btn.no-spin:hover { transform: translate(-50%, -50%); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(6px);
+}
+.modal-box {
+  background: linear-gradient(160deg, #1e1b4b, #0f172a);
+  border: 2px solid rgba(255,215,0,0.4);
+  border-radius: 24px;
+  padding: 46px 42px;
+  text-align: center;
+  max-width: 370px;
+  width: 92%;
+  animation: zoomIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes zoomIn { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-emoji { font-size: 4.2rem; display: block; margin-bottom: 10px; }
+.modal-prize { font-size: 1.9rem; font-weight: 900; color: #FFD700; margin-bottom: 8px; }
+.modal-desc  { color: rgba(255,255,255,0.65); font-size: 0.92rem; margin-bottom: 26px; }
+.modal-close {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  border: none; border-radius: 12px;
+  color: white; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; width: 100%;
+  transition: opacity 0.2s;
+}
+.modal-close:hover { opacity: 0.85; }
+
+/* ── Admin Panel (toàn màn hình) ── */
+#admin-panel {
+  position: fixed; inset: 0;
+  background: #070710;
+  z-index: 300;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+#admin-panel.open { display: flex; }
+
+.adm-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px;
+  background: rgba(255,215,0,0.04);
+  border-bottom: 1px solid rgba(255,215,0,0.18);
+  flex-shrink: 0;
+}
+.adm-header h2 { color: #FFD700; font-size: 1rem; margin-bottom: 2px; }
+.adm-header p  { color: rgba(255,255,255,0.45); font-size: 0.78rem; }
+.adm-close-btn {
+  padding: 7px 14px; font-size: 0.82rem;
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 8px;
+  background: rgba(255,255,255,0.08); color: white;
+  cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+}
+.adm-close-btn:hover { background: rgba(255,255,255,0.18); }
+
+.adm-stats {
+  display: flex; gap: 10px; padding: 14px 20px; flex-shrink: 0;
+}
+.stat-card {
+  flex: 1; background: rgba(255,215,0,0.07);
+  border: 1px solid rgba(255,215,0,0.15); border-radius: 10px;
+  padding: 12px 8px; text-align: center;
+}
+.stat-num { font-size: 1.6rem; font-weight: 900; color: #FFD700; line-height: 1; }
+.stat-lbl { font-size: 0.68rem; color: rgba(255,255,255,0.45); margin-top: 4px; }
+
+.adm-toolbar {
+  display: flex; gap: 8px; padding: 0 20px 12px; flex-wrap: wrap; flex-shrink: 0;
+}
+.adm-btn {
+  padding: 8px 14px; font-size: 0.8rem; font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  background: rgba(255,255,255,0.07); color: white;
+  cursor: pointer; transition: background 0.2s;
+}
+.adm-btn:hover { background: rgba(255,255,255,0.15); }
+.adm-btn-excel { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #86efac; }
+.adm-btn-excel:hover { background: rgba(34,197,94,0.2); }
+.adm-btn-print { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #93c5fd; }
+.adm-btn-print:hover { background: rgba(59,130,246,0.2); }
+.adm-btn-danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+.adm-btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+.adm-table-wrap { flex: 1; overflow-y: auto; padding: 0 20px 20px; }
+#adm-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+#adm-table th {
+  color: #FFD700; padding: 10px 12px; text-align: left;
+  border-bottom: 2px solid rgba(255,215,0,0.25);
+  position: sticky; top: 0; background: #070710; z-index: 1;
+}
+#adm-table td {
+  padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.75);
+}
+#adm-table tr:hover td { background: rgba(255,215,0,0.03); }
+.prize-win  { color: #FFD700; font-weight: 700; }
+.prize-none { color: rgba(255,255,255,0.38); }
+
+.adm-empty {
+  text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.3);
+}
+.adm-empty .adm-ico { font-size: 3rem; display: block; margin-bottom: 10px; }
+.adm-empty p { font-size: 0.9rem; }
+
+/* ── In ấn ── */
+@media print {
+  body > *:not(#admin-panel) { display: none !important; }
+  #admin-panel { position: static !important; background: white !important; }
+  .adm-header, .adm-stats, .adm-toolbar { display: none !important; }
+  #adm-print-hdr { display: block !important; text-align: center; margin-bottom: 16px; }
+  #adm-print-hdr h3 { font-size: 1.1rem; margin-bottom: 4px; color: #000; }
+  #adm-print-hdr p  { font-size: 0.82rem; color: #555; }
+  .adm-table-wrap { overflow: visible !important; padding: 0 !important; }
+  #adm-table { font-size: 0.82rem; }
+  #adm-table th { color: #333 !important; background: #f0f0f0 !important; border-color: #ccc !important; }
+  #adm-table td { color: #222 !important; border-bottom-color: #ddd !important; }
+  .prize-win  { color: #7a5c00 !important; }
+  .prize-none { color: #666 !important; }
+  .adm-empty  { color: #666 !important; }
+}
+#adm-print-hdr { display: none; }
+
+/* Loading */
+.spinner {
+  display: inline-block; width: 15px; height: 15px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white; border-radius: 50%;
+  animation: rotate 0.7s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+/* Confetti */
+.confetti-bit { position: fixed; pointer-events: none; z-index: 999; }
+@keyframes cfall { 0% { transform: translateY(-10px) rotateZ(0deg); opacity:1; } 100% { transform: translateY(110vh) rotateZ(720deg); opacity:0; } }
+
+.hidden { display: none !important; }
+#secret-zone { position: fixed; bottom: 0; right: 0; width: 44px; height: 44px; z-index: 50; }
+
+/* ── LAN / QR Panel ── */
+.lan-panel {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.lan-qr-wrap {
+  background: white;
+  border-radius: 8px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+.lan-qr-wrap img { display: block; border-radius: 4px; }
+.lan-text { min-width: 0; }
+.lan-title { font-size: 0.87rem; font-weight: 700; color: #FFD700; margin-bottom: 3px; }
+.lan-hint  { font-size: 0.73rem; color: rgba(255,255,255,0.42); margin-bottom: 7px; }
+.lan-url   {
+  font-size: 0.77rem; font-family: monospace; color: #93C5FD;
+  background: rgba(0,0,0,0.28); border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 6px; padding: 4px 8px; word-break: break-all;
+}
+</style>
+</head>
+
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<div class="container">
+  <div class="store-header">
+    <h1 id="h-store-name">🎡 VÒNG QUAY MAY MẮN</h1>
+    <p id="h-tagline">Mua hàng để nhận cơ hội quay thưởng!</p>
+  </div>
+
+  <!-- LAN QR Panel — hiện khi server chạy trên mạng nội bộ -->
+  <div id="lan-panel" class="lan-panel hidden">
+    <div id="lan-qr-wrap" class="lan-qr-wrap" style="display:none">
+      <img id="lan-qr-img" src="" alt="QR Code" width="90" height="90">
+    </div>
+    <div class="lan-text">
+      <div class="lan-title">📱 Khách truy cập bằng điện thoại</div>
+      <div class="lan-hint">Kết nối cùng WiFi rồi quét mã QR</div>
+      <div class="lan-url" id="lan-url-text">Đang tải...</div>
+    </div>
+  </div>
+
+  <!-- Bước 1: Nhập SĐT + Mã hóa đơn -->
+  <div id="step-phone">
+    <div class="card">
+      <div class="card-icon">🧾</div>
+      <h2>Xác nhận hóa đơn</h2>
+      <p>Nhập SĐT <strong style="color:#FFD700">và</strong> mã hóa đơn để được quay thưởng</p>
+      <input type="tel" id="phone-input" placeholder="Số điện thoại (VD: 0901 234 567)" maxlength="11" autocomplete="off" />
+      <input type="text" id="invoice-input" placeholder="Mã hóa đơn (VD: HD001234)" maxlength="30" autocomplete="off" style="text-transform:uppercase" />
+      <button class="btn btn-primary" id="check-btn">🎯 Xác nhận &amp; Quay thưởng</button>
+      <div id="phone-msg"></div>
+    </div>
+  </div>
+
+  <!-- Bước 2: Vòng quay -->
+  <div id="step-wheel" class="hidden">
+    <div id="cust-badge" class="badge"></div>
+    <div class="wheel-wrapper">
+      <div class="pointer"></div>
+      <canvas id="wheel-canvas"></canvas>
+      <button id="spin-btn">QUAY</button>
+    </div>
+    <div id="inv-badge" class="badge" style="font-size:0.82rem"></div>
+  </div>
+</div>
+
+<!-- Modal kết quả -->
+<div class="modal-overlay hidden" id="result-modal">
+  <div class="modal-box">
+    <span class="modal-emoji" id="m-emoji"></span>
+    <div class="modal-prize" id="m-prize"></div>
+    <div class="modal-desc"  id="m-desc"></div>
+    <button class="modal-close" id="modal-close-btn">Đóng &amp; Khách tiếp theo</button>
+  </div>
+</div>
+
+<!-- Admin panel — mở bằng cách nhấn 5 lần góc dưới bên phải -->
+<div id="admin-panel">
+
+  <!-- Header in ấn (chỉ hiện khi in) -->
+  <div id="adm-print-hdr">
+    <h3 id="adm-ph-store"></h3>
+    <p  id="adm-ph-date"></p>
+  </div>
+
+  <!-- Header -->
+  <div class="adm-header">
+    <div>
+      <h2>⚙️ Quản Lý Trúng Thưởng</h2>
+      <p id="adm-store-lbl"></p>
+    </div>
+    <button id="admin-close" class="adm-close-btn">✕ Đóng</button>
+  </div>
+
+  <!-- Thống kê -->
+  <div class="adm-stats">
+    <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Tổng lượt quay</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-winners">—</div><div class="stat-lbl">Lượt trúng thưởng</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-today">—</div><div class="stat-lbl">Hôm nay</div></div>
+  </div>
+
+  <!-- Thanh công cụ -->
+  <div class="adm-toolbar">
+    <button class="adm-btn" id="adm-refresh">🔄 Tải lại</button>
+    <button class="adm-btn adm-btn-excel" id="adm-export">📊 Xuất Excel</button>
+    <button class="adm-btn adm-btn-print" id="adm-print">🖨️ In danh sách</button>
+    <button class="adm-btn adm-btn-danger" id="adm-clear">🗑️ Xóa tất cả</button>
+    <button class="adm-btn" id="adm-to-main">↩️ Màn hình chính</button>
+  </div>
+
+  <!-- Bảng dữ liệu -->
+  <div class="adm-table-wrap">
+    <div id="adm-empty" class="adm-empty hidden">
+      <span class="adm-ico">📋</span>
+      <p>Chưa có lịch sử quay thưởng.</p>
+    </div>
+    <table id="adm-table" class="hidden">
+      <thead>
+        <tr>
+          <th>STT</th><th>Số điện thoại</th><th>Mã hóa đơn</th><th>Giải thưởng</th><th>Thời gian quay</th>
+        </tr>
+      </thead>
+      <tbody id="adm-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="secret-zone"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  CẤU HÌNH — Chỉnh sửa phần này theo cửa hàng của bạn
+// ════════════════════════════════════════════════════════════
+const CFG = {
+  // --- Proxy server (chạy proxy-server.js trước) ---
+  PROXY_URL: 'http://localhost:3000',
+
+  // --- Điều kiện ---
+  MIN_AMOUNT: 200000,    // Số tiền tối thiểu để được quay (VND)
+
+  // --- Cửa hàng ---
+  STORE_NAME: 'Tổng kho Huyền Anh',
+
+  // --- Chế độ demo: true = không cần API, để test giao diện ---
+  DEMO_MODE: false,
+
+  // --- Giải thưởng ---
+  // weight: xác suất (số lớn hơn = dễ trúng hơn)
+  PRIZES: [
+    { label: 'Không trúng',      emoji: '😊', color: '#374151', weight: 30, desc: 'Cảm ơn bạn đã tham gia!' },
+    { label: 'Thử lại',          emoji: '🔄', color: '#0369A1', weight: 10, desc: 'Chúc may mắn lần sau!' },
+    { label: 'Giảm 5%',          emoji: '🌟', color: '#6D28D9', weight: 20, desc: 'Áp dụng cho lần mua tiếp theo' },
+    { label: 'Giảm 10%',         emoji: '🎉', color: '#BE185D', weight: 15, desc: 'Áp dụng cho lần mua tiếp theo' },
+    { label: 'Giảm 20.000đ',     emoji: '💰', color: '#1D4ED8', weight: 12, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
+    { label: 'Giảm 50.000đ',     emoji: '💎', color: '#B45309', weight: 8,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
+    { label: 'Quà tặng',         emoji: '🎁', color: '#065F46', weight: 4,  desc: 'Nhận quà tại quầy thu ngân' },
+    { label: 'Giảm 100.000đ',    emoji: '👑', color: '#991B1B', weight: 1,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
+  ],
+};
+// ════════════════════════════════════════════════════════════
+
+// ──── KiotViet API (qua proxy server) ────
+async function kvInvoices(phone) {
+  const url = `${CFG.PROXY_URL}/api/invoices?phone=${encodeURIComponent(phone)}`;
+  const r = await fetch(url);
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error || 'Không lấy được hóa đơn từ KiotViet.');
+  }
+  return r.json();
+}
+
+// ──── LocalStorage (theo dõi hóa đơn đã quay) ────
+const LS = 'lw_v1';
+const lsGet  = () => { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch { return {}; } };
+const lsSave = d => localStorage.setItem(LS, JSON.stringify(d));
+const lsUsed = id => !!lsGet()[String(id)];
+function lsMark(id, phone, prize) {
+  const d = lsGet();
+  d[String(id)] = { phone, prize, at: new Date().toLocaleString('vi-VN') };
+  lsSave(d);
+}
+
+// ──── Canvas wheel ────
+const wcanvas = document.getElementById('wheel-canvas');
+const wctx    = wcanvas.getContext('2d');
+let WS, WC, WR;
+
+function calcSize() {
+  WS = Math.min(460, window.innerWidth - 40, Math.floor(window.innerHeight * 0.58));
+  WC = WS / 2;
+  WR = WC - 10;
+  wcanvas.width = wcanvas.height = WS;
+  const sb = document.getElementById('spin-btn');
+  const bs = Math.max(64, Math.floor(WS * 0.19));
+  sb.style.width  = bs + 'px';
+  sb.style.height = bs + 'px';
+  sb.style.fontSize = Math.max(10, bs * 0.13) + 'px';
+}
+
+let wheelAngle = 0;
+
+function drawWheel(angle) {
+  const prizes = CFG.PRIZES;
+  const total  = prizes.reduce((s, p) => s + p.weight, 0);
+  wctx.clearRect(0, 0, WS, WS);
+
+  let a = angle;
+  prizes.forEach(p => {
+    const slice = (p.weight / total) * Math.PI * 2;
+
+    // Slice fill
+    wctx.beginPath();
+    wctx.moveTo(WC, WC);
+    wctx.arc(WC, WC, WR, a, a + slice);
+    wctx.closePath();
+    wctx.fillStyle = p.color;
+    wctx.fill();
+    wctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    wctx.lineWidth = 1.5;
+    wctx.stroke();
+
+    // Text (clipped to slice)
+    wctx.save();
+    wctx.translate(WC, WC);
+    wctx.rotate(a + slice / 2);
+    wctx.beginPath();
+    wctx.moveTo(0, 0);
+    wctx.arc(0, 0, WR - 2, -slice / 2, slice / 2);
+    wctx.closePath();
+    wctx.clip();
+    wctx.textAlign  = 'right';
+    wctx.fillStyle  = 'white';
+    wctx.shadowColor = 'rgba(0,0,0,0.95)';
+    wctx.shadowBlur  = 4;
+    const sliceDeg = (p.weight / total) * 360;
+    const fs = sliceDeg > 25 ? 13 : sliceDeg > 12 ? 11 : 9;
+    wctx.font = `bold ${fs}px Segoe UI, sans-serif`;
+    wctx.fillText(`${p.emoji} ${p.label}`, WR - 14, 4);
+    wctx.restore();
+
+    a += slice;
+  });
+
+  // LED dots around rim
+  const nDots = 44;
+  for (let i = 0; i < nDots; i++) {
+    const t = angle + (i / nDots) * Math.PI * 2;
+    wctx.beginPath();
+    wctx.arc(WC + (WR + 1) * Math.cos(t), WC + (WR + 1) * Math.sin(t), 3.5, 0, Math.PI * 2);
+    wctx.fillStyle = i % 2 === 0 ? '#FFD700' : 'rgba(255,215,0,0.2)';
+    wctx.fill();
+  }
+
+  // Outer ring
+  wctx.beginPath();
+  wctx.arc(WC, WC, WR, 0, Math.PI * 2);
+  wctx.strokeStyle = 'rgba(255,215,0,0.45)';
+  wctx.lineWidth = 5;
+  wctx.stroke();
+
+  // Center circle
+  const cg = wctx.createRadialGradient(WC, WC, 0, WC, WC, 46);
+  cg.addColorStop(0, '#FFE566');
+  cg.addColorStop(1, '#FF8C00');
+  wctx.beginPath();
+  wctx.arc(WC, WC, 46, 0, Math.PI * 2);
+  wctx.fillStyle = cg;
+  wctx.fill();
+  wctx.strokeStyle = 'rgba(255,255,255,0.9)';
+  wctx.lineWidth = 3;
+  wctx.stroke();
+}
+
+// ──── Spin ────
+const ease = t => 1 - Math.pow(1 - t, 4);
+
+function prizeCenter(idx) {
+  const prizes = CFG.PRIZES;
+  const total  = prizes.reduce((s, p) => s + p.weight, 0);
+  let a = 0;
+  for (let i = 0; i < idx; i++) a += (prizes[i].weight / total) * Math.PI * 2;
+  return a + (prizes[idx].weight / total) * Math.PI;
+}
+
+function pickPrize() {
+  const prizes = CFG.PRIZES;
+  const total  = prizes.reduce((s, p) => s + p.weight, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < prizes.length; i++) { r -= prizes[i].weight; if (r <= 0) return i; }
+  return prizes.length - 1;
+}
+
+let spinning = false;
+let activeInvoice = null;
+
+function doSpin() {
+  if (spinning) return;
+  spinning = true;
+
+  const sb = document.getElementById('spin-btn');
+  sb.classList.add('no-spin');
+  sb.textContent = '...';
+
+  const idx = pickPrize();
+  const pCenter = prizeCenter(idx);
+  const POINTER = Math.PI * 1.5;  // top
+
+  let delta = ((POINTER - pCenter - wheelAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+  if (delta < 0.05) delta += Math.PI * 2;
+
+  // Jitter within segment so it doesn't land perfectly on center every time
+  const prizes = CFG.PRIZES;
+  const total  = prizes.reduce((s, p) => s + p.weight, 0);
+  const sliceA = (prizes[idx].weight / total) * Math.PI * 2;
+  delta += (Math.random() - 0.5) * sliceA * 0.45;
+
+  const totalDelta = delta + (5 + Math.floor(Math.random() * 4)) * Math.PI * 2;
+  const duration   = 5000 + Math.random() * 1500;
+  const startAngle = wheelAngle;
+  const t0 = performance.now();
+
+  (function frame(now) {
+    const t = Math.min((now - t0) / duration, 1);
+    wheelAngle = startAngle + totalDelta * ease(t);
+    drawWheel(wheelAngle % (Math.PI * 2));
+    if (t < 1) { requestAnimationFrame(frame); }
+    else { spinning = false; showResult(idx); }
+  })(performance.now());
+}
+
+// ──── Result modal ────
+function showResult(idx) {
+  const p = CFG.PRIZES[idx];
+  document.getElementById('m-emoji').textContent = p.emoji;
+  document.getElementById('m-prize').textContent = p.label;
+  document.getElementById('m-desc').textContent  = p.desc;
+  document.getElementById('result-modal').classList.remove('hidden');
+
+  const phone = document.getElementById('phone-input').value.trim();
+  if (activeInvoice) {
+    lsMark(activeInvoice.id, phone, p.label);
+    saveHistoryEntry({
+      phone,
+      invoiceCode: activeInvoice.code || String(activeInvoice.id),
+      prize:       p.label,
+      prizeEmoji:  p.emoji,
+      spinTime:    new Date().toLocaleString('vi-VN'),
+      spinTimeISO: new Date().toISOString(),
+    });
+  }
+
+  if (!['Không trúng', 'Thử lại'].includes(p.label)) confetti();
+}
+
+function confetti() {
+  const cols = ['#FFD700','#FF6B35','#EC4899','#10B981','#3B82F6','#8B5CF6','#EF4444'];
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-bit';
+      const s = el.style;
+      s.left   = Math.random() * 100 + 'vw';
+      s.top    = '-12px';
+      s.width  = (7 + Math.random() * 8) + 'px';
+      s.height = s.width;
+      s.background = cols[Math.floor(Math.random() * cols.length)];
+      s.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+      s.animation = `cfall ${2 + Math.random() * 2}s ${Math.random() * 0.6}s ease-in forwards`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4500);
+    }, i * 14);
+  }
+}
+
+// ──── Phone check & UI flow ────
+function setMsg(html, type) {
+  const el = document.getElementById('phone-msg');
+  el.innerHTML = html ? `<div class="msg msg-${type}">${html}</div>` : '';
+}
+
+function isToday(dateStr) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr);
+  const now = new Date();
+  return d.getFullYear() === now.getFullYear()
+      && d.getMonth()    === now.getMonth()
+      && d.getDate()     === now.getDate();
+}
+
+function resetBtn() {
+  const btn = document.getElementById('check-btn');
+  btn.disabled = false;
+  btn.innerHTML = '🎯 Xác nhận &amp; Quay thưởng';
+}
+
+async function checkPhone() {
+  const phone       = document.getElementById('phone-input').value.replace(/\s/g, '');
+  const invoiceCode = document.getElementById('invoice-input').value.trim().toUpperCase();
+  setMsg('', '');
+
+  if (!phone || phone.length < 9) {
+    setMsg('⚠️ Vui lòng nhập số điện thoại hợp lệ (ít nhất 9 chữ số).', 'error');
+    return;
+  }
+  if (!invoiceCode) {
+    setMsg('⚠️ Vui lòng nhập mã hóa đơn.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('check-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Đang kiểm tra...';
+
+  try {
+    if (CFG.DEMO_MODE) {
+      await new Promise(r => setTimeout(r, 900));
+      // Demo: chấp nhận mã DEMO001, từ chối các mã khác
+      if (invoiceCode !== 'DEMO001') {
+        setMsg('❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.', 'error');
+        resetBtn(); return;
+      }
+      const demoInv = { id: 'DEMO_001', code: 'DEMO001', total: 350000, purchaseDate: new Date().toISOString() };
+      if (lsUsed(demoInv.id)) {
+        setMsg('❌ Hóa đơn này đã được sử dụng để quay thưởng rồi.', 'error');
+        resetBtn(); return;
+      }
+      activeInvoice = demoInv;
+      goToWheel(phone, demoInv);
+      return;
+    }
+
+    const invoices = await kvInvoices(phone);
+
+    // 1. Kiểm tra SĐT có hóa đơn không
+    if (!invoices.length) {
+      setMsg('❌ Không tìm thấy hóa đơn nào với số điện thoại này. Vui lòng kiểm tra lại SĐT.', 'error');
+      resetBtn(); return;
+    }
+
+    // 2. Tìm hóa đơn theo mã
+    const inv = invoices.find(i =>
+      (i.code || '').toUpperCase() === invoiceCode ||
+      String(i.id) === invoiceCode
+    );
+    if (!inv) {
+      setMsg('❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.', 'error');
+      resetBtn(); return;
+    }
+
+    // 3. Kiểm tra hóa đơn đã quay chưa
+    if (lsUsed(inv.id)) {
+      setMsg('❌ Hóa đơn <strong>#' + inv.code + '</strong> đã được sử dụng để quay thưởng rồi.', 'error');
+      resetBtn(); return;
+    }
+
+    // 4. Kiểm tra ngày hóa đơn phải là hôm nay
+    const invDate = inv.purchaseDate || inv.createdDate || inv.modifiedDate;
+    if (!isToday(invDate)) {
+      const dateStr = invDate ? new Date(invDate).toLocaleDateString('vi-VN') : 'không xác định';
+      setMsg(`❌ Hóa đơn <strong>#${inv.code}</strong> không phát sinh trong ngày hôm nay (ngày trên hóa đơn: <strong>${dateStr}</strong>).`, 'error');
+      resetBtn(); return;
+    }
+
+    // 5. Kiểm tra giá trị hóa đơn
+    const amount = inv.total || inv.totalPayment || 0;
+    if (amount < CFG.MIN_AMOUNT) {
+      setMsg(`❌ Giá trị hóa đơn <strong>#${inv.code}</strong> là <strong>${amount.toLocaleString('vi-VN')}đ</strong>, chưa đạt mức tối thiểu <strong>${CFG.MIN_AMOUNT.toLocaleString('vi-VN')}đ</strong> để được quay thưởng.`, 'error');
+      resetBtn(); return;
+    }
+
+    // Tất cả điều kiện thỏa mãn → vào vòng quay
+    activeInvoice = inv;
+    goToWheel(phone, inv);
+
+  } catch (err) {
+    let msg = err.message || 'Lỗi không xác định.';
+    if (msg.includes('fetch') || msg.includes('Network') || msg.includes('Failed')) {
+      msg = `Không kết nối được proxy server.<br>
+        <small>Hãy chạy lệnh: <code>node proxy-server.js</code><br>
+        rồi mở lại trang này. Proxy phải đang chạy tại <code>localhost:3000</code>.</small>`;
+    }
+    setMsg('❌ ' + msg, 'error');
+    resetBtn();
+  }
+}
+
+function goToWheel(phone, inv) {
+  document.getElementById('step-phone').classList.add('hidden');
+  document.getElementById('step-wheel').classList.remove('hidden');
+
+  const amt = (inv.total || inv.totalPayment || 0).toLocaleString('vi-VN');
+  document.getElementById('cust-badge').innerHTML =
+    `📱 <strong>${phone}</strong> &nbsp;·&nbsp; ✅ Đủ điều kiện quay thưởng`;
+  document.getElementById('inv-badge').innerHTML =
+    `Hóa đơn <strong>#${inv.code}</strong> &nbsp;·&nbsp; Giá trị: <strong>${amt}đ</strong>`;
+
+  const sb = document.getElementById('spin-btn');
+  sb.textContent = 'QUAY';
+  sb.classList.remove('no-spin');
+  spinning = false;
+  wheelAngle = 0;
+  drawWheel(0);
+}
+
+function resetToPhone() {
+  activeInvoice = null;
+  spinning      = false;
+  wheelAngle    = 0;
+  drawWheel(0);
+
+  document.getElementById('step-wheel').classList.add('hidden');
+  document.getElementById('step-phone').classList.remove('hidden');
+  document.getElementById('result-modal').classList.add('hidden');
+  document.getElementById('phone-input').value   = '';
+  document.getElementById('invoice-input').value = '';
+
+  resetBtn();
+  setMsg('', '');
+}
+
+// ──── Stars background ────
+function initBg() {
+  const c = document.getElementById('bg-canvas');
+  const x = c.getContext('2d');
+  let W = c.width  = innerWidth;
+  let H = c.height = innerHeight;
+  window.addEventListener('resize', () => { W = c.width = innerWidth; H = c.height = innerHeight; });
+
+  const stars = Array.from({ length: 110 }, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    r: Math.random() * 1.6,
+    op: Math.random(), spd: 0.004 + Math.random() * 0.007,
+  }));
+
+  (function tick() {
+    x.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.op += s.spd;
+      if (s.op > 1 || s.op < 0) s.spd *= -1;
+      x.beginPath(); x.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      x.fillStyle = `rgba(255,255,255,${s.op * 0.65})`; x.fill();
+    });
+    requestAnimationFrame(tick);
+  })();
+}
+
+// ──── Lịch sử trúng thưởng ────
+const HIST_LS  = 'lw_hist_v1';
+const NON_WIN  = ['Không trúng', 'Thử lại'];
+
+function histGet()      { try { return JSON.parse(localStorage.getItem(HIST_LS) || '[]'); } catch { return []; } }
+function histSave(arr)  { localStorage.setItem(HIST_LS, JSON.stringify(arr)); }
+
+async function saveHistoryEntry(entry) {
+  const arr = histGet();
+  arr.push(entry);
+  histSave(arr);
+  try {
+    await fetch(`${CFG.PROXY_URL}/api/history`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    });
+  } catch { /* server offline — localStorage là bản dự phòng */ }
+}
+
+async function loadHistory() {
+  try {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 3000);
+    const r    = await fetch(`${CFG.PROXY_URL}/api/history`, { signal: ctrl.signal });
+    clearTimeout(tid);
+    if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) return d; }
+  } catch { /* fall through */ }
+  return histGet();
+}
+
+async function clearHistoryAll() {
+  histSave([]);
+  try { await fetch(`${CFG.PROXY_URL}/api/history`, { method: 'DELETE' }); } catch { /* offline */ }
+}
+
+function escXml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function exportExcel(rows) {
+  const xmlRows = rows.map((r, i) => `      <Row>
+        <Cell><Data ss:Type="Number">${i+1}</Data></Cell>
+        <Cell><Data ss:Type="String">${escXml(r.phone)}</Data></Cell>
+        <Cell><Data ss:Type="String">${escXml(r.invoiceCode)}</Data></Cell>
+        <Cell><Data ss:Type="String">${escXml(r.prize)}</Data></Cell>
+        <Cell><Data ss:Type="String">${escXml(r.spinTime)}</Data></Cell>
+      </Row>`).join('\n');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Worksheet ss:Name="Trung Thuong">
+    <Table>
+      <Row><Cell><Data ss:Type="String">${escXml(CFG.STORE_NAME)} — Lịch sử trúng thưởng</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">Xuất ngày: ${new Date().toLocaleString('vi-VN')}</Data></Cell></Row>
+      <Row/>
+      <Row>
+        <Cell><Data ss:Type="String">STT</Data></Cell>
+        <Cell><Data ss:Type="String">Số điện thoại</Data></Cell>
+        <Cell><Data ss:Type="String">Mã hóa đơn</Data></Cell>
+        <Cell><Data ss:Type="String">Giải thưởng</Data></Cell>
+        <Cell><Data ss:Type="String">Thời gian quay</Data></Cell>
+      </Row>
+${xmlRows}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+  const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `trung-thuong-${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.xls`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ──── Admin panel ────
+let _adminRows = [];
+let admTaps = 0, admTimer;
+
+document.getElementById('secret-zone').addEventListener('click', () => {
+  admTaps++;
+  clearTimeout(admTimer);
+  admTimer = setTimeout(() => { admTaps = 0; }, 3000);
+  if (admTaps >= 5) { openAdmin(); admTaps = 0; }
+});
+
+function openAdmin() {
+  document.getElementById('admin-panel').classList.add('open');
+  document.getElementById('adm-store-lbl').textContent = CFG.STORE_NAME;
+  document.getElementById('adm-ph-store').textContent  = CFG.STORE_NAME + ' — Lịch sử trúng thưởng';
+  refreshAdmin();
+}
+
+async function refreshAdmin() {
+  const tbody = document.getElementById('adm-tbody');
+  const empty = document.getElementById('adm-empty');
+  const table = document.getElementById('adm-table');
+
+  table.classList.remove('hidden');
+  empty.classList.add('hidden');
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Đang tải...</td></tr>`;
+
+  const rows = await loadHistory();
+  _adminRows = rows;
+  updateAdmStats(rows);
+
+  if (!rows.length) {
+    table.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  tbody.innerHTML = rows.slice().reverse().map((r, i) => {
+    const isWin = !NON_WIN.includes(r.prize);
+    return `<tr>
+      <td>${rows.length - i}</td>
+      <td>${r.phone || '—'}</td>
+      <td>${r.invoiceCode || '—'}</td>
+      <td class="${isWin ? 'prize-win' : 'prize-none'}">${r.prizeEmoji || ''} ${r.prize || '—'}</td>
+      <td>${r.spinTime || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function updateAdmStats(rows) {
+  const todayStr   = new Date().toISOString().slice(0, 10);
+  const winners    = rows.filter(r => !NON_WIN.includes(r.prize)).length;
+  const todayCount = rows.filter(r => r.spinTimeISO && r.spinTimeISO.startsWith(todayStr)).length;
+  document.getElementById('stat-total').textContent   = rows.length;
+  document.getElementById('stat-winners').textContent = winners;
+  document.getElementById('stat-today').textContent   = todayCount;
+}
+
+document.getElementById('admin-close').addEventListener('click', () =>
+  document.getElementById('admin-panel').classList.remove('open'));
+
+document.getElementById('adm-refresh').addEventListener('click', refreshAdmin);
+
+document.getElementById('adm-to-main').addEventListener('click', () => {
+  resetToPhone();
+  document.getElementById('admin-panel').classList.remove('open');
+});
+
+document.getElementById('adm-clear').addEventListener('click', async () => {
+  if (confirm('Xóa toàn bộ lịch sử trúng thưởng? Thao tác này không thể hoàn tác.')) {
+    await clearHistoryAll();
+    refreshAdmin();
+  }
+});
+
+document.getElementById('adm-export').addEventListener('click', () => {
+  if (!_adminRows.length) { alert('Không có dữ liệu để xuất.'); return; }
+  exportExcel(_adminRows);
+});
+
+document.getElementById('adm-print').addEventListener('click', () => {
+  document.getElementById('adm-ph-date').textContent = 'Ngày in: ' + new Date().toLocaleString('vi-VN');
+  window.print();
+});
+
+// ──── LAN / QR Panel ────
+async function initLanPanel() {
+  try {
+    const infoRes = await fetch(`${CFG.PROXY_URL}/api/info`);
+    if (!infoRes.ok) return;
+    const info = await infoRes.json();
+    if (!info.lanUrl || info.lanIp === 'localhost') return;
+
+    document.getElementById('lan-url-text').textContent = info.lanUrl;
+
+    const qrRes = await fetch(`${CFG.PROXY_URL}/api/qr?url=${encodeURIComponent(info.lanUrl)}`);
+    if (qrRes.ok) {
+      const { qr } = await qrRes.json();
+      const img = document.getElementById('lan-qr-img');
+      img.src = qr;
+      document.getElementById('lan-qr-wrap').style.display = '';
+    }
+
+    document.getElementById('lan-panel').classList.remove('hidden');
+  } catch { /* server offline */ }
+}
+
+// ──── Events ────
+document.getElementById('check-btn').addEventListener('click', checkPhone);
+document.getElementById('phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') { document.getElementById('invoice-input').focus(); } });
+document.getElementById('invoice-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPhone(); });
+document.getElementById('invoice-input').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
+document.getElementById('spin-btn').addEventListener('click', doSpin);
+document.getElementById('modal-close-btn').addEventListener('click', resetToPhone);
+
+// ──── Init ────
+calcSize();
+window.addEventListener('resize', () => { calcSize(); drawWheel(wheelAngle % (Math.PI * 2)); });
+drawWheel(0);
+initBg();
+initLanPanel();
+document.getElementById('h-store-name').textContent = `🎡 ${CFG.STORE_NAME.toUpperCase()}`;
+document.getElementById('h-tagline').textContent =
+  `Hóa đơn từ ${CFG.MIN_AMOUNT.toLocaleString('vi-VN')}đ trong ngày – Nhập mã & quay ngay nhận quà!`;
+</script>
+</body>
+</html>
