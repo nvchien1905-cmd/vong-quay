@@ -19,6 +19,10 @@ function writeHistory(arr) {
 // ════════════════════════════════════════════════════════════
 //  CẤU HÌNH — Điền thông tin KiotViet và Google Sheets vào đây
 // ════════════════════════════════════════════════════════════
+const _GS_CREDENTIALS_FILE = path.join(__dirname, 'credentials.json');
+// GS_ENABLED tự bật khi có GOOGLE_CREDENTIALS_JSON (Railway) hoặc file credentials.json (local)
+const _GS_ENABLED = !!process.env.GOOGLE_CREDENTIALS_JSON || fs.existsSync(_GS_CREDENTIALS_FILE);
+
 const CFG = {
   // ── KiotViet API ──────────────────────────────────────────
   CLIENT_ID:     'd67357dc-f1f3-465d-8c21-a633456ef46d',
@@ -27,10 +31,10 @@ const CFG = {
   PORT:          process.env.PORT || 3000,
 
   // ── Google Sheets ──────────────────────────────────────────
-  GS_ENABLED:     true,
-  GS_CREDENTIALS: path.join(__dirname, 'credentials.json'), // file Service Account key (local)
+  GS_ENABLED:     _GS_ENABLED,
+  GS_CREDENTIALS: _GS_CREDENTIALS_FILE, // file Service Account key (local)
   GS_SHEET_ID:    '19Gn0hHao929TSI7GuhAUFtBpEsFjAlb0vvd_N7Xakoo',
-  GS_TAB:         'Lich su',          // tên tab trong Google Spreadsheet
+  GS_TAB:         'Lich su',            // tên tab trong Google Spreadsheet
 };
 // ════════════════════════════════════════════════════════════
 
@@ -50,13 +54,26 @@ const LAN_URL = `http://${LAN_IP}:${CFG.PORT}`;
 let googleSheets = null;
 
 async function initSheets() {
-  if (!CFG.GS_ENABLED) return;
+  if (!CFG.GS_ENABLED) {
+    console.log('[Sheets] Bo qua -- khong tim thay credentials (GOOGLE_CREDENTIALS_JSON chua duoc dat)');
+    return;
+  }
   try {
     const { google } = require('googleapis');
-    // Ưu tiên env var GOOGLE_CREDENTIALS_JSON (Railway/cloud), fallback về file local
-    const credentials = process.env.GOOGLE_CREDENTIALS_JSON
-      ? JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON)
-      : JSON.parse(fs.readFileSync(CFG.GS_CREDENTIALS, 'utf8'));
+
+    let credentials;
+    if (process.env.GOOGLE_CREDENTIALS_JSON) {
+      console.log('[Sheets] Dung credentials tu bien moi truong GOOGLE_CREDENTIALS_JSON');
+      try {
+        credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+      } catch (parseErr) {
+        throw new Error('Khong the parse GOOGLE_CREDENTIALS_JSON -- kiem tra JSON co hop le khong. ' + parseErr.message);
+      }
+    } else {
+      console.log('[Sheets] Dung credentials tu file:', CFG.GS_CREDENTIALS);
+      credentials = JSON.parse(fs.readFileSync(CFG.GS_CREDENTIALS, 'utf8'));
+    }
+
     const auth = new google.auth.GoogleAuth({
       credentials,
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
@@ -80,8 +97,9 @@ async function initSheets() {
     }
     console.log('[Sheets] Ket noi Google Sheets thanh cong ✓');
   } catch (err) {
-    console.error('[Sheets] Loi ket noi:', err.message);
-    console.error('[Sheets] Kiem tra credentials.json va GS_SHEET_ID trong CFG');
+    console.error('[Sheets] LOI KET NOI:', err.message);
+    console.error('[Sheets] -- Tren Railway: dat bien GOOGLE_CREDENTIALS_JSON = noi dung file credentials.json');
+    console.error('[Sheets] -- Local: dat file credentials.json ben canh proxy-server.js');
     googleSheets = null;
   }
 }
