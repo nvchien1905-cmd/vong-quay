@@ -249,30 +249,40 @@ async function getCustomerGroups() {
   if (_groupsCache && Date.now() - _groupsCacheAt < 30 * 60 * 1000) return _groupsCache;
   const token = await getToken();
 
-  // Thử lần lượt các path (KiotViet docs không ghi rõ)
+  // KiotViet Public API không có endpoint /customergroups (đã kiểm tra).
+  // Các path đều trả 404 — trả về cache rỗng để fallback gracefully.
   const paths = ['/customerGroups', '/customergroups', '/customer-groups'];
-  let data = null;
   for (const p of paths) {
     try {
-      data = await httpsRequest({
+      const data = await httpsRequest({
         hostname: 'public.kiotapi.com',
         path:     p,
         method:   'GET',
-        headers: { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
+        headers:  { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
       });
-      console.log(`[Groups] Path "${p}" thanh cong`);
-      break;
+      _groupsCache   = Array.isArray(data) ? data : (data.data || []);
+      _groupsCacheAt = Date.now();
+      console.log(`[Groups] Path "${p}" OK — ${_groupsCache.length} nhom`);
+      return _groupsCache;
     } catch (err) {
-      console.warn(`[Groups] Path "${p}" loi: ${err.message}`);
+      console.warn(`[Groups] Path "${p}": ${err.message}`);
     }
   }
-  if (!data) throw new Error('Khong tim thay endpoint customergroups');
-
-  // API có thể trả về array trực tiếp hoặc { data: [...] }
-  _groupsCache   = Array.isArray(data) ? data : (data.data || []);
+  console.warn('[Groups] Khong co endpoint customergroups — chiet khau se lay tu config local');
+  _groupsCache   = [];
   _groupsCacheAt = Date.now();
-  console.log(`[Groups] Loaded ${_groupsCache.length} nhom:`, _groupsCache.map(g => `${g.name}(${g.discount}%)`).join(', '));
   return _groupsCache;
+}
+
+async function getCustomerDetail(id) {
+  const token = await getToken();
+  const data  = await httpsRequest({
+    hostname: 'public.kiotapi.com',
+    path:     `/customers/${id}`,
+    method:   'GET',
+    headers:  { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
+  });
+  return data;
 }
 
 // Trích xuất groupId và groupName từ customer object (nhiều format khác nhau)
@@ -476,7 +486,18 @@ const server = http.createServer(async (req, res) => {
       const c = customers[0];
       const { groupId, groupName } = extractGroupInfo(c);
 
-      // Tìm nhóm khớp trong allGroups để lấy discount
+      // Lấy chi tiết khách để có totalInvoiced (list endpoint không trả về field này)
+      let totalInvoiced = c.totalInvoiced || 0;
+      if (!totalInvoiced && c.id) {
+        try {
+          const detail  = await getCustomerDetail(c.id);
+          totalInvoiced = detail.totalInvoiced || detail.totalRevenue || 0;
+        } catch (err) {
+          console.warn(`[Loyalty] Khong lay duoc chi tiet khach ${c.id}:`, err.message);
+        }
+      }
+
+      // Tìm nhóm khớp trong allGroups để lấy discount (nếu endpoint tồn tại)
       let matchedGroup = null;
       if (groupId) {
         matchedGroup = allGroups.find(g => g.id === groupId || String(g.id) === String(groupId));
@@ -486,23 +507,21 @@ const server = http.createServer(async (req, res) => {
           g.name && g.name.trim().toLowerCase() === groupName.toLowerCase()
         );
       }
-
       const groupDiscount = matchedGroup ? (matchedGroup.discount ?? null) : null;
 
-      console.log(`[Loyalty] SDT ${phone} -> ${c.name} | diem: ${c.rewardPoint} | nhom: "${groupName || 'N/A'}" | chiet khau: ${groupDiscount !== null ? groupDiscount + '%' : 'N/A'}`);
+      console.log(`[Loyalty] ${c.name} | diem: ${c.rewardPoint} | mua: ${totalInvoiced.toLocaleString('vi-VN')}d | nhom: "${groupName || '-'}" | CK: ${groupDiscount !== null ? groupDiscount + '%' : 'N/A'}`);
 
       sendJSON(res, 200, {
         found:         true,
         name:          c.name          || '',
         phone:         c.contactNumber || phone,
         rewardPoint:   c.rewardPoint   || 0,
-        totalInvoiced: c.totalInvoiced || 0,
+        totalInvoiced,
         totalPoint:    c.totalPoint    || 0,
         debt:          c.debt          || 0,
         groupId,
         groupName,
         groupDiscount,
-        // Trả về toàn bộ nhóm để frontend có thể dùng
         allGroups: allGroups.map(g => ({
           id:       g.id,
           name:     g.name     || '',
@@ -528,22 +547,6 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // GET /api/debug/customer?phone=... — xem raw KiotViet response ─
-  if (url.pathname === '/api/debug/customer' && req.method === 'GET') {
-    const phone = url.searchParams.get('phone');
-    if (!phone) { sendJSON(res, 400, { error: 'Thieu phone' }); return; }
-    try {
-      const token = await getToken();
-      const raw   = await httpsRequest({
-        hostname: 'public.kiotapi.com',
-        path:     `/customers?contactNumber=${encodeURIComponent(phone)}&pageSize=1&includeCustomerGroup=true`,
-        method:   'GET',
-        headers:  { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
-      });
-      sendJSON(res, 200, raw);
-    } catch (err) { sendJSON(res, 500, { error: err.message }); }
-    return;
-  }
 
   sendJSON(res, 404, { error: 'Khong tim thay endpoint. Vao ' + LAN_URL + ' de mo vong quay.' });
 });
