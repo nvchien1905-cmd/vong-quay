@@ -46,7 +46,6 @@ body {
 }
 .store-header p { color: rgba(255,255,255,0.55); font-size: 0.9rem; margin-top: 6px; }
 
-/* Card */
 .card {
   width: 100%;
   max-width: 400px;
@@ -61,7 +60,6 @@ body {
 .card h2 { font-size: 1.35rem; color: #FFD700; margin-bottom: 6px; }
 .card > p { color: rgba(255,255,255,0.55); font-size: 0.88rem; margin-bottom: 22px; }
 
-/* Input */
 input {
   width: 100%;
   padding: 14px 18px;
@@ -77,7 +75,6 @@ input {
 input:focus { border-color: #FFD700; }
 input::placeholder { color: rgba(255,255,255,0.3); }
 
-/* Buttons */
 .btn {
   padding: 14px 24px;
   border: none;
@@ -97,12 +94,10 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .btn-primary:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255,107,53,0.55); }
 
-/* Messages */
 .msg { padding: 10px 14px; border-radius: 10px; font-size: 0.87rem; margin-top: 12px; line-height: 1.5; }
 .msg-error  { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.35);  color: #FCA5A5; }
 .msg-info   { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.35); color: #93C5FD; }
 
-/* Wheel section */
 #step-wheel {
   display: flex;
   flex-direction: column;
@@ -121,7 +116,6 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .badge strong { color: #FFD700; }
 
-/* Wheel wrapper */
 .wheel-wrapper { position: relative; }
 
 .pointer {
@@ -195,7 +189,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .modal-close:hover { opacity: 0.85; }
 
-/* ── Admin Panel (toàn màn hình) ── */
+/* Admin Panel */
 #admin-panel {
   position: fixed; inset: 0;
   background: #070710;
@@ -223,9 +217,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .adm-close-btn:hover { background: rgba(255,255,255,0.18); }
 
-.adm-stats {
-  display: flex; gap: 10px; padding: 14px 20px; flex-shrink: 0;
-}
+.adm-stats { display: flex; gap: 10px; padding: 14px 20px; flex-shrink: 0; }
 .stat-card {
   flex: 1; background: rgba(255,215,0,0.07);
   border: 1px solid rgba(255,215,0,0.15); border-radius: 10px;
@@ -234,9 +226,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 .stat-num { font-size: 1.6rem; font-weight: 900; color: #FFD700; line-height: 1; }
 .stat-lbl { font-size: 0.68rem; color: rgba(255,255,255,0.45); margin-top: 4px; }
 
-.adm-toolbar {
-  display: flex; gap: 8px; padding: 0 20px 12px; flex-wrap: wrap; flex-shrink: 0;
-}
+.adm-toolbar { display: flex; gap: 8px; padding: 0 20px 12px; flex-wrap: wrap; flex-shrink: 0; }
 .adm-btn {
   padding: 8px 14px; font-size: 0.8rem; font-weight: 600;
   border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
@@ -266,13 +256,10 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 .prize-win  { color: #FFD700; font-weight: 700; }
 .prize-none { color: rgba(255,255,255,0.38); }
 
-.adm-empty {
-  text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.3);
-}
+.adm-empty { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.3); }
 .adm-empty .adm-ico { font-size: 3rem; display: block; margin-bottom: 10px; }
 .adm-empty p { font-size: 0.9rem; }
 
-/* ── In ấn ── */
 @media print {
   body > *:not(#admin-panel) { display: none !important; }
   #admin-panel { position: static !important; background: white !important; }
@@ -290,7 +277,6 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 #adm-print-hdr { display: none; }
 
-/* Loading */
 .spinner {
   display: inline-block; width: 15px; height: 15px;
   border: 2px solid rgba(255,255,255,0.3);
@@ -300,17 +286,18 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 @keyframes rotate { to { transform: rotate(360deg); } }
 
-/* Confetti */
 .confetti-bit { position: fixed; pointer-events: none; z-index: 999; }
-@keyframes cfall { 0% { transform: translateY(-10px) rotateZ(0deg); opacity:1; } 100% { transform: translateY(110vh) rotateZ(720deg); opacity:0; } }
+@keyframes cfall {
+  0%   { transform: translateY(-10px) rotateZ(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(110vh) rotateZ(720deg) scale(0.5); opacity: 0; }
+}
 
 .hidden { display: none !important; }
 #secret-zone { position: fixed; bottom: 0; right: 0; width: 44px; height: 44px; z-index: 50; }
 
-/* ── Section wrapper (display:contents khi hiện, none khi ẩn) ── */
 .section-wrap { display: contents; }
 
-/* ── Tab bar ── */
+/* Tab bar */
 .tab-bar {
   display: flex;
   gap: 8px;
@@ -342,7 +329,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   color: rgba(255,255,255,0.8);
 }
 
-/* ── Loyalty section ── */
+/* Loyalty section */
 #section-loyalty { width: 100%; max-width: 400px; }
 
 .loyalty-result-box {
@@ -383,7 +370,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .loyalty-info-row strong { color: white; font-weight: 700; }
 
-/* ── Top Customers section ── */
+/* Top Customers */
 #section-top { width: 100%; max-width: 420px; }
 
 .top-card {
@@ -415,7 +402,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   vertical-align: middle;
 }
 .top-row:last-child td { border-bottom: none; }
-.top-rank { text-align: center; font-size: 1.3rem; width: 38px; padding-left: 0 !important; }
+.top-rank  { text-align: center; font-size: 1.3rem; width: 38px; padding-left: 0 !important; }
 .top-name  { font-size: 0.88rem; font-weight: 700; color: white; }
 .top-phone { font-size: 0.73rem; color: rgba(255,255,255,0.38); margin-top: 2px; font-family: monospace; }
 .top-total { text-align: right; font-weight: 800; color: #4ADE80; font-size: 0.88rem; white-space: nowrap; padding-right: 0 !important; }
@@ -423,7 +410,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 .rank-2 .top-name { color: #CBD5E1; }
 .rank-3 .top-name { color: #CD7C32; }
 
-/* ── LAN / QR Panel ── */
+/* LAN / QR Panel */
 .lan-panel {
   width: 100%;
   max-width: 400px;
@@ -435,12 +422,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   align-items: center;
   gap: 16px;
 }
-.lan-qr-wrap {
-  background: white;
-  border-radius: 8px;
-  padding: 4px;
-  flex-shrink: 0;
-}
+.lan-qr-wrap { background: white; border-radius: 8px; padding: 4px; flex-shrink: 0; }
 .lan-qr-wrap img { display: block; border-radius: 4px; }
 .lan-text { min-width: 0; }
 .lan-title { font-size: 0.87rem; font-weight: 700; color: #FFD700; margin-bottom: 3px; }
@@ -450,11 +432,69 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   background: rgba(0,0,0,0.28); border: 1px solid rgba(59,130,246,0.25);
   border-radius: 6px; padding: 4px 8px; word-break: break-all;
 }
+
+/* ── Countdown overlay ── */
+#countdown-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 150;
+  backdrop-filter: blur(6px);
+}
+#countdown-num {
+  font-size: clamp(120px, 22vw, 220px);
+  font-weight: 900;
+  color: #FFD700;
+  text-shadow: 0 0 60px rgba(255,215,0,0.9), 0 0 120px rgba(255,107,53,0.6);
+  line-height: 1;
+  user-select: none;
+  animation: countPop 0.85s cubic-bezier(0.34,1.4,0.64,1) forwards;
+}
+@keyframes countPop {
+  0%   { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+  50%  { transform: scale(1.3) rotate(4deg);  opacity: 1; }
+  75%  { transform: scale(0.92) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0deg);    opacity: 0.9; }
+}
+
+/* ── Sound toggle button ── */
+#sound-btn {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 100;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(20, 20, 40, 0.7);
+  border: 1px solid rgba(255,215,0,0.35);
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  backdrop-filter: blur(8px);
+}
+#sound-btn:hover { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.7); }
+#sound-btn.muted { opacity: 0.45; }
 </style>
 </head>
 
 <body>
 <canvas id="bg-canvas"></canvas>
+
+<!-- Sound toggle -->
+<button id="sound-btn" title="Bật/tắt âm thanh">🔊</button>
+
+<!-- Countdown overlay -->
+<div id="countdown-overlay" class="hidden">
+  <div id="countdown-num">3</div>
+</div>
 
 <div class="container">
   <div class="store-header">
@@ -469,9 +509,8 @@ input::placeholder { color: rgba(255,255,255,0.3); }
     <button class="tab-btn" id="tab-top">🏅 Top 10</button>
   </div>
 
-  <!-- Section: Quay thưởng (tất cả nội dung hiện tại) -->
+  <!-- Section: Quay thưởng -->
   <div id="section-spin" class="section-wrap">
-    <!-- LAN QR Panel — hiện khi server chạy trên mạng nội bộ -->
     <div id="lan-panel" class="lan-panel hidden">
       <div id="lan-qr-wrap" class="lan-qr-wrap" style="display:none">
         <img id="lan-qr-img" src="" alt="QR Code" width="90" height="90">
@@ -508,7 +547,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
     </div>
   </div>
 
-  <!-- Section: Kiểm tra điểm tích lũy -->
+  <!-- Section: Điểm tích lũy -->
   <div id="section-loyalty" class="hidden">
     <div class="card">
       <div class="card-icon">🏆</div>
@@ -530,7 +569,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
     </div>
   </div>
 
-  <!-- Section: Top 10 khách hàng -->
+  <!-- Section: Top 10 -->
   <div id="section-top" class="hidden">
     <div class="top-card">
       <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:3px">
@@ -543,13 +582,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
       </div>
       <div id="top-msg"></div>
       <table class="top-table" id="top-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Khách hàng</th>
-            <th>Chi tiêu</th>
-          </tr>
-        </thead>
+        <thead><tr><th>#</th><th>Khách hàng</th><th>Chi tiêu</th></tr></thead>
         <tbody id="top-tbody"></tbody>
       </table>
     </div>
@@ -566,16 +599,12 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   </div>
 </div>
 
-<!-- Admin panel — mở bằng cách nhấn 5 lần góc dưới bên phải -->
+<!-- Admin panel -->
 <div id="admin-panel">
-
-  <!-- Header in ấn (chỉ hiện khi in) -->
   <div id="adm-print-hdr">
     <h3 id="adm-ph-store"></h3>
     <p  id="adm-ph-date"></p>
   </div>
-
-  <!-- Header -->
   <div class="adm-header">
     <div>
       <h2>⚙️ Quản Lý Trúng Thưởng</h2>
@@ -583,15 +612,11 @@ input::placeholder { color: rgba(255,255,255,0.3); }
     </div>
     <button id="admin-close" class="adm-close-btn">✕ Đóng</button>
   </div>
-
-  <!-- Thống kê -->
   <div class="adm-stats">
     <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Tổng lượt quay</div></div>
     <div class="stat-card"><div class="stat-num" id="stat-winners">—</div><div class="stat-lbl">Lượt trúng thưởng</div></div>
     <div class="stat-card"><div class="stat-num" id="stat-today">—</div><div class="stat-lbl">Hôm nay</div></div>
   </div>
-
-  <!-- Thanh công cụ -->
   <div class="adm-toolbar">
     <button class="adm-btn" id="adm-refresh">🔄 Tải lại</button>
     <button class="adm-btn adm-btn-excel" id="adm-export">📊 Xuất Excel</button>
@@ -599,8 +624,6 @@ input::placeholder { color: rgba(255,255,255,0.3); }
     <button class="adm-btn adm-btn-danger" id="adm-clear">🗑️ Xóa tất cả</button>
     <button class="adm-btn" id="adm-to-main">↩️ Màn hình chính</button>
   </div>
-
-  <!-- Bảng dữ liệu -->
   <div class="adm-table-wrap">
     <div id="adm-empty" class="adm-empty hidden">
       <span class="adm-ico">📋</span>
@@ -608,9 +631,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
     </div>
     <table id="adm-table" class="hidden">
       <thead>
-        <tr>
-          <th>STT</th><th>Số điện thoại</th><th>Mã hóa đơn</th><th>Giải thưởng</th><th>Thời gian quay</th>
-        </tr>
+        <tr><th>STT</th><th>Số điện thoại</th><th>Mã hóa đơn</th><th>Giải thưởng</th><th>Thời gian quay</th></tr>
       </thead>
       <tbody id="adm-tbody"></tbody>
     </table>
@@ -621,62 +642,119 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 
 <script>
 // ════════════════════════════════════════════════════════════
-//  CẤU HÌNH — Chỉnh sửa phần này theo cửa hàng của bạn
+//  CẤU HÌNH
 // ════════════════════════════════════════════════════════════
 const CFG = {
-  // --- Proxy server (chạy proxy-server.js trước) ---
-  PROXY_URL: 'https://vong-quay-production.up.railway.app',
-
-  // --- Điều kiện ---
-  MIN_AMOUNT: 200000,    // Số tiền tối thiểu để được quay (VND)
-
-  // --- Cửa hàng ---
+  PROXY_URL:  'https://vong-quay-production.up.railway.app',
+  MIN_AMOUNT: 200000,
   STORE_NAME: 'Tổng kho Huyền Anh',
+  DEMO_MODE:  false,
 
-  // --- Chế độ demo: true = không cần API, để test giao diện ---
-  DEMO_MODE: false,
-
-  // --- Giải thưởng ---
-  // weight: xác suất (số lớn hơn = dễ trúng hơn)
+  // 100% ô đều là quà trúng thưởng
   PRIZES: [
-    { label: 'Không trúng',      emoji: '😊', color: '#374151', weight: 30, desc: 'Cảm ơn bạn đã tham gia!' },
-    { label: 'Thử lại',          emoji: '🔄', color: '#0369A1', weight: 10, desc: 'Chúc may mắn lần sau!' },
-    { label: 'Giảm 5%',          emoji: '🌟', color: '#6D28D9', weight: 20, desc: 'Áp dụng cho lần mua tiếp theo' },
-    { label: 'Giảm 10%',         emoji: '🎉', color: '#BE185D', weight: 15, desc: 'Áp dụng cho lần mua tiếp theo' },
-    { label: 'Giảm 20.000đ',     emoji: '💰', color: '#1D4ED8', weight: 12, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Giảm 50.000đ',     emoji: '💎', color: '#B45309', weight: 8,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Quà tặng',         emoji: '🎁', color: '#065F46', weight: 4,  desc: 'Nhận quà tại quầy thu ngân' },
-    { label: 'Giảm 100.000đ',    emoji: '👑', color: '#991B1B', weight: 1,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
+    { label: 'Giảm 5%',       emoji: '🌟', color: '#5B21B6', weight: 28, desc: 'Áp dụng cho lần mua tiếp theo' },
+    { label: 'Voucher 20K',   emoji: '💰', color: '#1E40AF', weight: 22, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
+    { label: 'Giảm 10%',      emoji: '🎉', color: '#9D174D', weight: 18, desc: 'Áp dụng cho lần mua tiếp theo' },
+    { label: 'Quà tặng',      emoji: '🎁', color: '#065F46', weight: 14, desc: 'Nhận quà tại quầy thu ngân' },
+    { label: 'Voucher 50K',   emoji: '💎', color: '#92400E', weight: 10, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
+    { label: 'Giảm 15%',      emoji: '✨', color: '#075985', weight: 5,  desc: 'Áp dụng cho lần mua tiếp theo' },
+    { label: 'Voucher 100K',  emoji: '👑', color: '#7F1D1D', weight: 2,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
+    { label: 'Quà đặc biệt', emoji: '🏆', color: '#4C1D95', weight: 1,  desc: 'Liên hệ nhân viên để nhận quà!' },
   ],
 };
 
+// ──── Audio System (Web Audio API) ────
+let audioCtx    = null;
+let soundEnabled = true;
+let bgActive    = false;
+let bgTimer     = null;
+const BG_NOTES  = [261.6, 329.6, 392, 523, 392, 329.6, 261.6, 293.7];
+let bgIdx       = 0;
 
-// ──── KiotViet API (qua proxy server) ────
-async function kvInvoices(phone) {
-  const url = `${CFG.PROXY_URL}/api/invoices?phone=${encodeURIComponent(phone)}`;
-  const r = await fetch(url);
-  if (!r.ok) {
-    const err = await r.json().catch(() => ({}));
-    throw new Error(err.error || 'Không lấy được hóa đơn từ KiotViet.');
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function tone(freq, type, vol, dur, startDelay) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getCtx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type; o.frequency.value = freq;
+    const t = ctx.currentTime + (startDelay || 0);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.start(t); o.stop(t + dur);
+  } catch(e) {}
+}
+
+function playTick() {
+  tone(500 + Math.random() * 400, 'triangle', 0.1, 0.06);
+}
+
+function playCountBeep(isGo) {
+  if (isGo) {
+    [523, 659, 784].forEach((f, i) => tone(f, 'sine', 0.25, 0.4, i * 0.1));
+  } else {
+    tone(440, 'sine', 0.22, 0.2);
   }
+}
+
+function playWin() {
+  [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 'sine', 0.2, 0.4, i * 0.12));
+}
+
+function startBgMusic() {
+  if (bgActive || !soundEnabled) return;
+  bgActive = true;
+  function next() {
+    if (!bgActive || !soundEnabled) return;
+    const f = BG_NOTES[bgIdx++ % BG_NOTES.length];
+    tone(f, 'sine', 0.035, 0.45);
+    bgTimer = setTimeout(next, 500);
+  }
+  next();
+}
+function stopBgMusic() {
+  bgActive = false;
+  clearTimeout(bgTimer);
+}
+
+document.getElementById('sound-btn').addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = soundEnabled ? '🔊' : '🔇';
+  btn.classList.toggle('muted', !soundEnabled);
+  if (soundEnabled) startBgMusic(); else stopBgMusic();
+});
+
+// ──── KiotViet API ────
+async function kvInvoices(phone) {
+  const r = await fetch(`${CFG.PROXY_URL}/api/invoices?phone=${encodeURIComponent(phone)}`);
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'Không lấy được hóa đơn từ KiotViet.'); }
   return r.json();
 }
 
-// ──── LocalStorage (theo dõi hóa đơn đã quay) ────
+// ──── LocalStorage ────
 const LS = 'lw_v1';
 const lsGet  = () => { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch { return {}; } };
 const lsSave = d => localStorage.setItem(LS, JSON.stringify(d));
 const lsUsed = id => !!lsGet()[String(id)];
 function lsMark(id, phone, prize) {
-  const d = lsGet();
-  d[String(id)] = { phone, prize, at: new Date().toLocaleString('vi-VN') };
-  lsSave(d);
+  const d = lsGet(); d[String(id)] = { phone, prize, at: new Date().toLocaleString('vi-VN') }; lsSave(d);
 }
 
 // ──── Canvas wheel ────
 const wcanvas = document.getElementById('wheel-canvas');
 const wctx    = wcanvas.getContext('2d');
 let WS, WC, WR;
+let ledFrame  = 0;
+let spinning  = false;
 
 function calcSize() {
   WS = Math.min(460, window.innerWidth - 40, Math.floor(window.innerHeight * 0.58));
@@ -685,8 +763,7 @@ function calcSize() {
   wcanvas.width = wcanvas.height = WS;
   const sb = document.getElementById('spin-btn');
   const bs = Math.max(64, Math.floor(WS * 0.19));
-  sb.style.width  = bs + 'px';
-  sb.style.height = bs + 'px';
+  sb.style.width = sb.style.height = bs + 'px';
   sb.style.fontSize = Math.max(10, bs * 0.13) + 'px';
 }
 
@@ -699,125 +776,241 @@ function drawWheel(angle) {
 
   let a = angle;
   prizes.forEach(p => {
-    const slice = (p.weight / total) * Math.PI * 2;
+    const slice    = (p.weight / total) * Math.PI * 2;
+    const sliceDeg = (p.weight / total) * 360;
 
-    // Slice fill
+    // Slice with inner highlight gradient
     wctx.beginPath();
     wctx.moveTo(WC, WC);
     wctx.arc(WC, WC, WR, a, a + slice);
     wctx.closePath();
     wctx.fillStyle = p.color;
     wctx.fill();
-    wctx.strokeStyle = 'rgba(255,255,255,0.18)';
-    wctx.lineWidth = 1.5;
+
+    // Inner glow overlay
+    wctx.save();
+    wctx.beginPath();
+    wctx.moveTo(WC, WC);
+    wctx.arc(WC, WC, WR, a, a + slice);
+    wctx.closePath();
+    const grd = wctx.createRadialGradient(WC, WC, 0, WC, WC, WR);
+    grd.addColorStop(0,   'rgba(255,255,255,0.22)');
+    grd.addColorStop(0.5, 'rgba(255,255,255,0.04)');
+    grd.addColorStop(1,   'rgba(0,0,0,0.18)');
+    wctx.fillStyle = grd;
+    wctx.fill();
+    wctx.restore();
+
+    wctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    wctx.lineWidth = 2;
+    wctx.beginPath();
+    wctx.moveTo(WC, WC);
+    wctx.arc(WC, WC, WR, a, a + slice);
+    wctx.closePath();
     wctx.stroke();
 
-    // Text (clipped to slice)
+    // Draw prize text (emoji + label) inside slice
     wctx.save();
     wctx.translate(WC, WC);
     wctx.rotate(a + slice / 2);
+
+    // Clip to slice area
     wctx.beginPath();
     wctx.moveTo(0, 0);
-    wctx.arc(0, 0, WR - 2, -slice / 2, slice / 2);
+    wctx.arc(0, 0, WR - 3, -slice / 2, slice / 2);
     wctx.closePath();
     wctx.clip();
-    wctx.textAlign  = 'right';
-    wctx.fillStyle  = 'white';
-    wctx.shadowColor = 'rgba(0,0,0,0.95)';
-    wctx.shadowBlur  = 4;
-    const sliceDeg = (p.weight / total) * 360;
-    const fs = sliceDeg > 25 ? 13 : sliceDeg > 12 ? 11 : 9;
-    wctx.font = `bold ${fs}px Segoe UI, sans-serif`;
-    wctx.fillText(`${p.emoji} ${p.label}`, WR - 14, 4);
-    wctx.restore();
 
+    const midR = WR * 0.60;
+
+    // Emoji — large
+    const emojiSz = sliceDeg > 35 ? 24 : sliceDeg > 22 ? 20 : sliceDeg > 14 ? 16 : 13;
+    wctx.font = `${emojiSz}px serif`;
+    wctx.textAlign    = 'center';
+    wctx.textBaseline = 'alphabetic';
+    wctx.shadowColor  = 'transparent';
+    wctx.shadowBlur   = 0;
+    wctx.fillText(p.emoji, midR, 2);
+
+    // Label text
+    const labelSz = sliceDeg > 35 ? 13 : sliceDeg > 22 ? 11 : sliceDeg > 14 ? 10 : 8;
+    wctx.font         = `900 ${labelSz}px Segoe UI, sans-serif`;
+    wctx.fillStyle    = 'white';
+    wctx.shadowColor  = 'rgba(0,0,0,0.95)';
+    wctx.shadowBlur   = 5;
+    wctx.textBaseline = 'top';
+    wctx.fillText(p.label, midR, 5);
+
+    wctx.restore();
     a += slice;
   });
 
-  // LED dots around rim
-  const nDots = 44;
+  // Animated LED dots
+  const nDots = 48;
   for (let i = 0; i < nDots; i++) {
-    const t = angle + (i / nDots) * Math.PI * 2;
+    const t   = angle + (i / nDots) * Math.PI * 2;
+    const px  = WC + (WR + 2) * Math.cos(t);
+    const py  = WC + (WR + 2) * Math.sin(t);
+    const isOn = (i + ledFrame) % 2 === 0;
     wctx.beginPath();
-    wctx.arc(WC + (WR + 1) * Math.cos(t), WC + (WR + 1) * Math.sin(t), 3.5, 0, Math.PI * 2);
-    wctx.fillStyle = i % 2 === 0 ? '#FFD700' : 'rgba(255,215,0,0.2)';
+    wctx.arc(px, py, 3.8, 0, Math.PI * 2);
+    if (spinning) {
+      wctx.fillStyle = isOn ? '#FFD700' : '#FF4500';
+      if (isOn) {
+        wctx.shadowColor = '#FFD700';
+        wctx.shadowBlur  = 8;
+      } else {
+        wctx.shadowBlur = 0;
+      }
+    } else {
+      wctx.shadowBlur  = 0;
+      wctx.fillStyle   = i % 2 === 0 ? '#FFD700' : 'rgba(255,215,0,0.18)';
+    }
     wctx.fill();
   }
+  wctx.shadowBlur = 0;
 
   // Outer ring
   wctx.beginPath();
   wctx.arc(WC, WC, WR, 0, Math.PI * 2);
-  wctx.strokeStyle = 'rgba(255,215,0,0.45)';
+  wctx.strokeStyle = 'rgba(255,215,0,0.55)';
   wctx.lineWidth = 5;
   wctx.stroke();
 
   // Center circle
-  const cg = wctx.createRadialGradient(WC, WC, 0, WC, WC, 46);
-  cg.addColorStop(0, '#FFE566');
-  cg.addColorStop(1, '#FF8C00');
+  const cg = wctx.createRadialGradient(WC, WC, 0, WC, WC, 48);
+  cg.addColorStop(0, '#FFF5B0');
+  cg.addColorStop(0.5, '#FFE566');
+  cg.addColorStop(1,   '#FF8C00');
   wctx.beginPath();
-  wctx.arc(WC, WC, 46, 0, Math.PI * 2);
+  wctx.arc(WC, WC, 48, 0, Math.PI * 2);
   wctx.fillStyle = cg;
   wctx.fill();
-  wctx.strokeStyle = 'rgba(255,255,255,0.9)';
+  wctx.strokeStyle = 'rgba(255,255,255,0.95)';
   wctx.lineWidth = 3;
   wctx.stroke();
 }
 
-// ──── Spin ────
-const ease = t => 1 - Math.pow(1 - t, 4);
+// ──── Easing: ease-in then ease-out ────
+function spinEase(t) {
+  if (t < 0.25) {
+    const p = t / 0.25;
+    return p * p * 0.18;
+  } else if (t < 0.75) {
+    return 0.18 + ((t - 0.25) / 0.50) * 0.62;
+  } else {
+    const p = (t - 0.75) / 0.25;
+    return 0.80 + (1 - Math.pow(1 - p, 3)) * 0.20;
+  }
+}
 
+// ──── Countdown ────
+function showCountdown() {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('countdown-overlay');
+    const numEl   = document.getElementById('countdown-num');
+    overlay.classList.remove('hidden');
+
+    const steps = [
+      { text: '3',  delay: 900, isGo: false },
+      { text: '2',  delay: 900, isGo: false },
+      { text: '1',  delay: 900, isGo: false },
+      { text: '🚀', delay: 550, isGo: true  },
+    ];
+    let i = 0;
+
+    function next() {
+      if (i >= steps.length) {
+        overlay.classList.add('hidden');
+        resolve();
+        return;
+      }
+      const s = steps[i++];
+      numEl.textContent = s.text;
+      numEl.style.animation = 'none';
+      void numEl.offsetHeight;
+      numEl.style.animation = 'countPop 0.85s cubic-bezier(0.34,1.4,0.64,1) forwards';
+      playCountBeep(s.isGo);
+      setTimeout(next, s.delay);
+    }
+    next();
+  });
+}
+
+// ──── Prize logic ────
 function prizeCenter(idx) {
-  const prizes = CFG.PRIZES;
-  const total  = prizes.reduce((s, p) => s + p.weight, 0);
+  const prizes = CFG.PRIZES, total = prizes.reduce((s, p) => s + p.weight, 0);
   let a = 0;
   for (let i = 0; i < idx; i++) a += (prizes[i].weight / total) * Math.PI * 2;
   return a + (prizes[idx].weight / total) * Math.PI;
 }
 
 function pickPrize() {
-  const prizes = CFG.PRIZES;
-  const total  = prizes.reduce((s, p) => s + p.weight, 0);
+  const prizes = CFG.PRIZES, total = prizes.reduce((s, p) => s + p.weight, 0);
   let r = Math.random() * total;
   for (let i = 0; i < prizes.length; i++) { r -= prizes[i].weight; if (r <= 0) return i; }
   return prizes.length - 1;
 }
 
-let spinning = false;
 let activeInvoice = null;
 
-function doSpin() {
+// ──── Spin ────
+async function doSpin() {
   if (spinning) return;
-  spinning = true;
 
   const sb = document.getElementById('spin-btn');
   sb.classList.add('no-spin');
   sb.textContent = '...';
 
-  const idx = pickPrize();
-  const pCenter = prizeCenter(idx);
-  const POINTER = Math.PI * 1.5;  // top
+  // Start bg music on first user interaction
+  startBgMusic();
 
-  let delta = ((POINTER - pCenter - wheelAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+  // Countdown 3-2-1
+  await showCountdown();
+
+  spinning = true;
+
+  const idx    = pickPrize();
+  const pCtr   = prizeCenter(idx);
+  const POINTER = Math.PI * 1.5;
+
+  let delta = ((POINTER - pCtr - wheelAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
   if (delta < 0.05) delta += Math.PI * 2;
 
-  // Jitter within segment so it doesn't land perfectly on center every time
-  const prizes = CFG.PRIZES;
-  const total  = prizes.reduce((s, p) => s + p.weight, 0);
+  const prizes = CFG.PRIZES, total = prizes.reduce((s, p) => s + p.weight, 0);
   const sliceA = (prizes[idx].weight / total) * Math.PI * 2;
   delta += (Math.random() - 0.5) * sliceA * 0.45;
 
   const totalDelta = delta + (5 + Math.floor(Math.random() * 4)) * Math.PI * 2;
-  const duration   = 5000 + Math.random() * 1500;
+  const duration   = 5500 + Math.random() * 1500;
   const startAngle = wheelAngle;
-  const t0 = performance.now();
+  const t0         = performance.now();
+  const TICK_RAD   = 0.25;
 
   (function frame(now) {
-    const t = Math.min((now - t0) / duration, 1);
-    wheelAngle = startAngle + totalDelta * ease(t);
+    const t     = Math.min((now - t0) / duration, 1);
+    const prev  = wheelAngle;
+    wheelAngle  = startAngle + totalDelta * spinEase(t);
+
+    // LED blink — faster during high speed
+    const speed = wheelAngle - prev;
+    if (speed > 0.02) ledFrame += Math.ceil(speed * 8);
+    else ledFrame++;
+
+    // Tick sound when crossing segment boundary
+    if (Math.floor(wheelAngle / TICK_RAD) > Math.floor(prev / TICK_RAD)) {
+      playTick();
+    }
+
     drawWheel(wheelAngle % (Math.PI * 2));
+
     if (t < 1) { requestAnimationFrame(frame); }
-    else { spinning = false; showResult(idx); }
+    else {
+      spinning  = false;
+      ledFrame  = 0;
+      drawWheel(wheelAngle % (Math.PI * 2));
+      showResult(idx);
+    }
   })(performance.now());
 }
 
@@ -842,26 +1035,29 @@ function showResult(idx) {
     });
   }
 
-  if (!['Không trúng', 'Thử lại'].includes(p.label)) confetti();
+  // All prizes are winners — always celebrate!
+  playWin();
+  confetti();
 }
 
 function confetti() {
-  const cols = ['#FFD700','#FF6B35','#EC4899','#10B981','#3B82F6','#8B5CF6','#EF4444'];
-  for (let i = 0; i < 100; i++) {
+  const cols = ['#FFD700','#FF6B35','#EC4899','#10B981','#3B82F6','#8B5CF6','#EF4444','#FBBF24','#34D399'];
+  for (let i = 0; i < 160; i++) {
     setTimeout(() => {
       const el = document.createElement('div');
       el.className = 'confetti-bit';
       const s = el.style;
       s.left   = Math.random() * 100 + 'vw';
-      s.top    = '-12px';
-      s.width  = (7 + Math.random() * 8) + 'px';
-      s.height = s.width;
-      s.background = cols[Math.floor(Math.random() * cols.length)];
-      s.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
-      s.animation = `cfall ${2 + Math.random() * 2}s ${Math.random() * 0.6}s ease-in forwards`;
+      s.top    = '-14px';
+      const sz = 6 + Math.random() * 11;
+      s.width  = sz + 'px';
+      s.height = (Math.random() > 0.5 ? sz : sz * (1.5 + Math.random())) + 'px';
+      s.background  = cols[Math.floor(Math.random() * cols.length)];
+      s.borderRadius = Math.random() > 0.4 ? '50%' : '2px';
+      s.animation   = `cfall ${2.5 + Math.random() * 2}s ${Math.random() * 0.8}s ease-in forwards`;
       document.body.appendChild(el);
-      setTimeout(() => el.remove(), 4500);
-    }, i * 14);
+      setTimeout(() => el.remove(), 5500);
+    }, i * 10);
   }
 }
 
@@ -873,11 +1069,8 @@ function setMsg(html, type) {
 
 function isToday(dateStr) {
   if (!dateStr) return false;
-  const d = new Date(dateStr);
-  const now = new Date();
-  return d.getFullYear() === now.getFullYear()
-      && d.getMonth()    === now.getMonth()
-      && d.getDate()     === now.getDate();
+  const d = new Date(dateStr), now = new Date();
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
 }
 
 function resetBtn() {
@@ -891,14 +1084,8 @@ async function checkPhone() {
   const invoiceCode = document.getElementById('invoice-input').value.trim().toUpperCase();
   setMsg('', '');
 
-  if (!phone || phone.length < 9) {
-    setMsg('⚠️ Vui lòng nhập số điện thoại hợp lệ (ít nhất 9 chữ số).', 'error');
-    return;
-  }
-  if (!invoiceCode) {
-    setMsg('⚠️ Vui lòng nhập mã hóa đơn.', 'error');
-    return;
-  }
+  if (!phone || phone.length < 9) { setMsg('⚠️ Vui lòng nhập số điện thoại hợp lệ (ít nhất 9 chữ số).', 'error'); return; }
+  if (!invoiceCode)                { setMsg('⚠️ Vui lòng nhập mã hóa đơn.', 'error'); return; }
 
   const btn = document.getElementById('check-btn');
   btn.disabled = true;
@@ -907,46 +1094,22 @@ async function checkPhone() {
   try {
     if (CFG.DEMO_MODE) {
       await new Promise(r => setTimeout(r, 900));
-      // Demo: chấp nhận mã DEMO001, từ chối các mã khác
-      if (invoiceCode !== 'DEMO001') {
-        setMsg('❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.', 'error');
-        resetBtn(); return;
-      }
+      if (invoiceCode !== 'DEMO001') { setMsg('❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.', 'error'); resetBtn(); return; }
       const demoInv = { id: 'DEMO_001', code: 'DEMO001', total: 350000, purchaseDate: new Date().toISOString() };
-      if (lsUsed(demoInv.id)) {
-        setMsg('❌ Hóa đơn này đã được sử dụng để quay thưởng rồi.', 'error');
-        resetBtn(); return;
-      }
+      if (lsUsed(demoInv.id)) { setMsg('❌ Hóa đơn này đã được sử dụng để quay thưởng rồi.', 'error'); resetBtn(); return; }
       activeInvoice = demoInv;
       goToWheel(phone, demoInv);
       return;
     }
 
     const invoices = await kvInvoices(phone);
+    if (!invoices.length) { setMsg('❌ Không tìm thấy hóa đơn nào với số điện thoại này. Vui lòng kiểm tra lại SĐT.', 'error'); resetBtn(); return; }
 
-    // 1. Kiểm tra SĐT có hóa đơn không
-    if (!invoices.length) {
-      setMsg('❌ Không tìm thấy hóa đơn nào với số điện thoại này. Vui lòng kiểm tra lại SĐT.', 'error');
-      resetBtn(); return;
-    }
+    const inv = invoices.find(i => (i.code || '').toUpperCase() === invoiceCode || String(i.id) === invoiceCode);
+    if (!inv) { setMsg('❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.', 'error'); resetBtn(); return; }
 
-    // 2. Tìm hóa đơn theo mã
-    const inv = invoices.find(i =>
-      (i.code || '').toUpperCase() === invoiceCode ||
-      String(i.id) === invoiceCode
-    );
-    if (!inv) {
-      setMsg('❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.', 'error');
-      resetBtn(); return;
-    }
+    if (lsUsed(inv.id)) { setMsg('❌ Hóa đơn <strong>#' + inv.code + '</strong> đã được sử dụng để quay thưởng rồi.', 'error'); resetBtn(); return; }
 
-    // 3. Kiểm tra hóa đơn đã quay chưa
-    if (lsUsed(inv.id)) {
-      setMsg('❌ Hóa đơn <strong>#' + inv.code + '</strong> đã được sử dụng để quay thưởng rồi.', 'error');
-      resetBtn(); return;
-    }
-
-    // 4. Kiểm tra ngày hóa đơn phải là hôm nay
     const invDate = inv.purchaseDate || inv.createdDate || inv.modifiedDate;
     if (!isToday(invDate)) {
       const dateStr = invDate ? new Date(invDate).toLocaleDateString('vi-VN') : 'không xác định';
@@ -954,23 +1117,19 @@ async function checkPhone() {
       resetBtn(); return;
     }
 
-    // 5. Kiểm tra giá trị hóa đơn
     const amount = inv.total || inv.totalPayment || 0;
     if (amount < CFG.MIN_AMOUNT) {
       setMsg(`❌ Giá trị hóa đơn <strong>#${inv.code}</strong> là <strong>${amount.toLocaleString('vi-VN')}đ</strong>, chưa đạt mức tối thiểu <strong>${CFG.MIN_AMOUNT.toLocaleString('vi-VN')}đ</strong> để được quay thưởng.`, 'error');
       resetBtn(); return;
     }
 
-    // Tất cả điều kiện thỏa mãn → vào vòng quay
     activeInvoice = inv;
     goToWheel(phone, inv);
 
   } catch (err) {
     let msg = err.message || 'Lỗi không xác định.';
     if (msg.includes('fetch') || msg.includes('Network') || msg.includes('Failed')) {
-      msg = `Không kết nối được server Railway.<br>
-        <small>Server: <code>https://vong-quay-production.up.railway.app</code><br>
-        Kiểm tra trạng thái deploy trên Railway dashboard.</small>`;
+      msg = `Không kết nối được server Railway.<br><small>Server: <code>https://vong-quay-production.up.railway.app</code><br>Kiểm tra trạng thái deploy trên Railway dashboard.</small>`;
     }
     setMsg('❌ ' + msg, 'error');
     resetBtn();
@@ -982,15 +1141,14 @@ function goToWheel(phone, inv) {
   document.getElementById('step-wheel').classList.remove('hidden');
 
   const amt = (inv.total || inv.totalPayment || 0).toLocaleString('vi-VN');
-  document.getElementById('cust-badge').innerHTML =
-    `📱 <strong>${phone}</strong> &nbsp;·&nbsp; ✅ Đủ điều kiện quay thưởng`;
-  document.getElementById('inv-badge').innerHTML =
-    `Hóa đơn <strong>#${inv.code}</strong> &nbsp;·&nbsp; Giá trị: <strong>${amt}đ</strong>`;
+  document.getElementById('cust-badge').innerHTML = `📱 <strong>${phone}</strong> &nbsp;·&nbsp; ✅ Đủ điều kiện quay thưởng`;
+  document.getElementById('inv-badge').innerHTML  = `Hóa đơn <strong>#${inv.code}</strong> &nbsp;·&nbsp; Giá trị: <strong>${amt}đ</strong>`;
 
   const sb = document.getElementById('spin-btn');
   sb.textContent = 'QUAY';
   sb.classList.remove('no-spin');
-  spinning = false;
+  spinning   = false;
+  ledFrame   = 0;
   wheelAngle = 0;
   drawWheel(0);
 }
@@ -998,6 +1156,7 @@ function goToWheel(phone, inv) {
 function resetToPhone() {
   activeInvoice = null;
   spinning      = false;
+  ledFrame      = 0;
   wheelAngle    = 0;
   drawWheel(0);
 
@@ -1006,7 +1165,6 @@ function resetToPhone() {
   document.getElementById('result-modal').classList.add('hidden');
   document.getElementById('phone-input').value   = '';
   document.getElementById('invoice-input').value = '';
-
   resetBtn();
   setMsg('', '');
 }
@@ -1015,16 +1173,12 @@ function resetToPhone() {
 function initBg() {
   const c = document.getElementById('bg-canvas');
   const x = c.getContext('2d');
-  let W = c.width  = innerWidth;
-  let H = c.height = innerHeight;
+  let W = c.width = innerWidth, H = c.height = innerHeight;
   window.addEventListener('resize', () => { W = c.width = innerWidth; H = c.height = innerHeight; });
-
   const stars = Array.from({ length: 110 }, () => ({
     x: Math.random() * W, y: Math.random() * H,
-    r: Math.random() * 1.6,
-    op: Math.random(), spd: 0.004 + Math.random() * 0.007,
+    r: Math.random() * 1.6, op: Math.random(), spd: 0.004 + Math.random() * 0.007,
   }));
-
   (function tick() {
     x.clearRect(0, 0, W, H);
     stars.forEach(s => {
@@ -1037,24 +1191,20 @@ function initBg() {
   })();
 }
 
-// ──── Lịch sử trúng thưởng ────
-const HIST_LS  = 'lw_hist_v1';
-const NON_WIN  = ['Không trúng', 'Thử lại'];
+// ──── History ────
+const HIST_LS = 'lw_hist_v1';
+const NON_WIN = [];
 
-function histGet()      { try { return JSON.parse(localStorage.getItem(HIST_LS) || '[]'); } catch { return []; } }
-function histSave(arr)  { localStorage.setItem(HIST_LS, JSON.stringify(arr)); }
+function histGet()     { try { return JSON.parse(localStorage.getItem(HIST_LS) || '[]'); } catch { return []; } }
+function histSave(arr) { localStorage.setItem(HIST_LS, JSON.stringify(arr)); }
 
 async function saveHistoryEntry(entry) {
-  const arr = histGet();
-  arr.push(entry);
-  histSave(arr);
+  const arr = histGet(); arr.push(entry); histSave(arr);
   try {
     await fetch(`${CFG.PROXY_URL}/api/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(entry),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(entry),
     });
-  } catch { /* server offline — localStorage là bản dự phòng */ }
+  } catch { /* localStorage is backup */ }
 }
 
 async function loadHistory() {
@@ -1064,19 +1214,19 @@ async function loadHistory() {
     const r    = await fetch(`${CFG.PROXY_URL}/api/history`, { signal: ctrl.signal });
     clearTimeout(tid);
     if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) return d; }
-  } catch { /* fall through */ }
+  } catch { }
   return histGet();
 }
 
 async function clearHistoryAll() {
   histSave([]);
-  try { await fetch(`${CFG.PROXY_URL}/api/history`, { method: 'DELETE' }); } catch { /* offline */ }
+  try { await fetch(`${CFG.PROXY_URL}/api/history`, { method: 'DELETE' }); } catch { }
 }
 
+// ──── Excel export ────
 function escXml(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function exportExcel(rows) {
   const xmlRows = rows.map((r, i) => `      <Row>
         <Cell><Data ss:Type="Number">${i+1}</Data></Cell>
@@ -1085,35 +1235,28 @@ function exportExcel(rows) {
         <Cell><Data ss:Type="String">${escXml(r.prize)}</Data></Cell>
         <Cell><Data ss:Type="String">${escXml(r.spinTime)}</Data></Cell>
       </Row>`).join('\n');
-
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
-  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-  <Worksheet ss:Name="Trung Thuong">
-    <Table>
-      <Row><Cell><Data ss:Type="String">${escXml(CFG.STORE_NAME)} — Lịch sử trúng thưởng</Data></Cell></Row>
-      <Row><Cell><Data ss:Type="String">Xuất ngày: ${new Date().toLocaleString('vi-VN')}</Data></Cell></Row>
-      <Row/>
-      <Row>
-        <Cell><Data ss:Type="String">STT</Data></Cell>
-        <Cell><Data ss:Type="String">Số điện thoại</Data></Cell>
-        <Cell><Data ss:Type="String">Mã hóa đơn</Data></Cell>
-        <Cell><Data ss:Type="String">Giải thưởng</Data></Cell>
-        <Cell><Data ss:Type="String">Thời gian quay</Data></Cell>
-      </Row>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Worksheet ss:Name="Trung Thuong"><Table>
+    <Row><Cell><Data ss:Type="String">${escXml(CFG.STORE_NAME)} — Lịch sử trúng thưởng</Data></Cell></Row>
+    <Row><Cell><Data ss:Type="String">Xuất ngày: ${new Date().toLocaleString('vi-VN')}</Data></Cell></Row>
+    <Row/>
+    <Row>
+      <Cell><Data ss:Type="String">STT</Data></Cell>
+      <Cell><Data ss:Type="String">Số điện thoại</Data></Cell>
+      <Cell><Data ss:Type="String">Mã hóa đơn</Data></Cell>
+      <Cell><Data ss:Type="String">Giải thưởng</Data></Cell>
+      <Cell><Data ss:Type="String">Thời gian quay</Data></Cell>
+    </Row>
 ${xmlRows}
-    </Table>
-  </Worksheet>
+  </Table></Worksheet>
 </Workbook>`;
-
   const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `trung-thuong-${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.xls`;
-  a.click();
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = `trung-thuong-${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.xls`;
+  a.click(); URL.revokeObjectURL(url);
 }
 
 // ──── Admin panel ────
@@ -1121,8 +1264,7 @@ let _adminRows = [];
 let admTaps = 0, admTimer;
 
 document.getElementById('secret-zone').addEventListener('click', () => {
-  admTaps++;
-  clearTimeout(admTimer);
+  admTaps++; clearTimeout(admTimer);
   admTimer = setTimeout(() => { admTaps = 0; }, 3000);
   if (admTaps >= 5) { openAdmin(); admTaps = 0; }
 });
@@ -1138,21 +1280,12 @@ async function refreshAdmin() {
   const tbody = document.getElementById('adm-tbody');
   const empty = document.getElementById('adm-empty');
   const table = document.getElementById('adm-table');
-
-  table.classList.remove('hidden');
-  empty.classList.add('hidden');
+  table.classList.remove('hidden'); empty.classList.add('hidden');
   tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:rgba(255,255,255,.3)">Đang tải...</td></tr>`;
-
   const rows = await loadHistory();
   _adminRows = rows;
   updateAdmStats(rows);
-
-  if (!rows.length) {
-    table.classList.add('hidden');
-    empty.classList.remove('hidden');
-    return;
-  }
-
+  if (!rows.length) { table.classList.add('hidden'); empty.classList.remove('hidden'); return; }
   tbody.innerHTML = rows.slice().reverse().map((r, i) => {
     const isWin = !NON_WIN.includes(r.prize);
     return `<tr>
@@ -1174,35 +1307,22 @@ function updateAdmStats(rows) {
   document.getElementById('stat-today').textContent   = todayCount;
 }
 
-document.getElementById('admin-close').addEventListener('click', () =>
-  document.getElementById('admin-panel').classList.remove('open'));
-
+document.getElementById('admin-close').addEventListener('click', () => document.getElementById('admin-panel').classList.remove('open'));
 document.getElementById('adm-refresh').addEventListener('click', refreshAdmin);
-
-document.getElementById('adm-to-main').addEventListener('click', () => {
-  resetToPhone();
-  document.getElementById('admin-panel').classList.remove('open');
-});
-
+document.getElementById('adm-to-main').addEventListener('click', () => { resetToPhone(); document.getElementById('admin-panel').classList.remove('open'); });
 document.getElementById('adm-clear').addEventListener('click', async () => {
-  if (confirm('Xóa toàn bộ lịch sử trúng thưởng? Thao tác này không thể hoàn tác.')) {
-    await clearHistoryAll();
-    refreshAdmin();
-  }
+  if (confirm('Xóa toàn bộ lịch sử trúng thưởng? Thao tác này không thể hoàn tác.')) { await clearHistoryAll(); refreshAdmin(); }
 });
+document.getElementById('adm-export').addEventListener('click', () => { if (!_adminRows.length) { alert('Không có dữ liệu để xuất.'); return; } exportExcel(_adminRows); });
+document.getElementById('adm-print').addEventListener('click', () => { document.getElementById('adm-ph-date').textContent = 'Ngày in: ' + new Date().toLocaleString('vi-VN'); window.print(); });
 
-document.getElementById('adm-export').addEventListener('click', () => {
-  if (!_adminRows.length) { alert('Không có dữ liệu để xuất.'); return; }
-  exportExcel(_adminRows);
-});
-
-document.getElementById('adm-print').addEventListener('click', () => {
-  document.getElementById('adm-ph-date').textContent = 'Ngày in: ' + new Date().toLocaleString('vi-VN');
-  window.print();
-});
-
-// ──── LAN / QR Panel ────
+// ──── LAN / QR Panel — ẩn trên mobile ────
 async function initLanPanel() {
+  // Không hiển thị QR nếu người dùng đang dùng điện thoại
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    || (window.innerWidth < 768 && window.innerHeight < 1024 && 'ontouchstart' in window);
+  if (isMobile) return;
+
   try {
     const infoRes = await fetch(`${CFG.PROXY_URL}/api/info`);
     if (!infoRes.ok) return;
@@ -1225,7 +1345,7 @@ async function initLanPanel() {
 
 // ──── Tab switching ────
 function switchTab(tab) {
-  ['spin', 'loyalty', 'top'].forEach(t => {
+  ['spin','loyalty','top'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
   });
@@ -1238,40 +1358,29 @@ function switchTab(tab) {
   if (tab === 'top') loadTopCustomers();
 }
 
-// ──── Top 10 khách hàng ────
+// ──── Top 10 ────
 let _topLoaded = false;
 async function loadTopCustomers() {
   if (_topLoaded) return;
   _topLoaded = true;
-
   const loadEl = document.getElementById('top-loading');
   const msgEl  = document.getElementById('top-msg');
   const tbody  = document.getElementById('top-tbody');
-
-  loadEl.classList.remove('hidden');
-  msgEl.innerHTML  = '';
-  tbody.innerHTML  = '';
-
+  loadEl.classList.remove('hidden'); msgEl.innerHTML = ''; tbody.innerHTML = '';
   try {
     const r    = await fetch(`${CFG.PROXY_URL}/api/top-customers`);
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Lỗi máy chủ');
-
     if (data.month) document.getElementById('top-month').textContent = 'Tháng ' + data.month;
-
     if (!data.top || !data.top.length) {
       msgEl.innerHTML = '<div class="msg msg-info" style="margin-top:12px">Chưa có dữ liệu hóa đơn tháng này.</div>';
       return;
     }
-
-    const medals = ['🥇', '🥈', '🥉'];
+    const medals = ['🥇','🥈','🥉'];
     tbody.innerHTML = data.top.map((c, i) => `
-      <tr class="top-row rank-${i + 1}">
-        <td class="top-rank">${medals[i] || (i + 1)}</td>
-        <td>
-          <div class="top-name">${c.name}</div>
-          ${c.phone ? `<div class="top-phone">${c.phone}</div>` : ''}
-        </td>
+      <tr class="top-row rank-${i+1}">
+        <td class="top-rank">${medals[i] || (i+1)}</td>
+        <td><div class="top-name">${c.name}</div>${c.phone ? `<div class="top-phone">${c.phone}</div>` : ''}</td>
         <td class="top-total">${c.total.toLocaleString('vi-VN')}đ</td>
       </tr>`).join('');
   } catch (err) {
@@ -1281,7 +1390,7 @@ async function loadTopCustomers() {
   }
 }
 
-// ──── Kiểm tra điểm tích lũy ────
+// ──── Loyalty ────
 function setLoyaltyMsg(html, type) {
   const el = document.getElementById('loyalty-msg');
   el.innerHTML = html ? `<div class="msg msg-${type}">${html}</div>` : '';
@@ -1291,38 +1400,27 @@ async function checkLoyalty() {
   const phone = document.getElementById('loyalty-phone-input').value.replace(/\s/g, '');
   setLoyaltyMsg('', '');
   document.getElementById('loyalty-result').classList.add('hidden');
-
-  if (!phone || phone.length < 9) {
-    setLoyaltyMsg('⚠️ Vui lòng nhập số điện thoại hợp lệ (ít nhất 9 chữ số).', 'error');
-    return;
-  }
-
+  if (!phone || phone.length < 9) { setLoyaltyMsg('⚠️ Vui lòng nhập số điện thoại hợp lệ (ít nhất 9 chữ số).', 'error'); return; }
   const btn = document.getElementById('loyalty-check-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Đang tra cứu...';
-
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Đang tra cứu...';
   try {
     const r    = await fetch(`${CFG.PROXY_URL}/api/loyalty?phone=${encodeURIComponent(phone)}`);
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Lỗi máy chủ');
-
     if (!data.found) {
       setLoyaltyMsg('❌ Không tìm thấy khách hàng với số điện thoại này trong KiotViet.', 'error');
     } else {
       document.getElementById('loy-points').textContent = (data.rewardPoint || 0).toLocaleString('vi-VN');
       document.getElementById('loy-name').textContent   = data.name  || '—';
       document.getElementById('loy-phone').textContent  = data.phone || phone;
-      document.getElementById('loy-total').textContent  = data.totalInvoiced
-        ? data.totalInvoiced.toLocaleString('vi-VN') + 'đ'
-        : '—';
+      document.getElementById('loy-total').textContent  = data.totalInvoiced ? data.totalInvoiced.toLocaleString('vi-VN') + 'đ' : '—';
       document.getElementById('loy-group').textContent  = data.groupName || '—';
       document.getElementById('loyalty-result').classList.remove('hidden');
     }
   } catch (err) {
     setLoyaltyMsg('❌ ' + (err.message || 'Lỗi không xác định.'), 'error');
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = '🔍 Kiểm tra điểm';
+    btn.disabled = false; btn.innerHTML = '🔍 Kiểm tra điểm';
   }
 }
 
@@ -1334,7 +1432,7 @@ setInterval(() => { _topLoaded = false; if (!document.getElementById('section-to
 document.getElementById('loyalty-check-btn').addEventListener('click', checkLoyalty);
 document.getElementById('loyalty-phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkLoyalty(); });
 document.getElementById('check-btn').addEventListener('click', checkPhone);
-document.getElementById('phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') { document.getElementById('invoice-input').focus(); } });
+document.getElementById('phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('invoice-input').focus(); });
 document.getElementById('invoice-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPhone(); });
 document.getElementById('invoice-input').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
 document.getElementById('spin-btn').addEventListener('click', doSpin);
@@ -1347,8 +1445,7 @@ drawWheel(0);
 initBg();
 initLanPanel();
 document.getElementById('h-store-name').textContent = `🎡 ${CFG.STORE_NAME.toUpperCase()}`;
-document.getElementById('h-tagline').textContent =
-  `Hóa đơn từ ${CFG.MIN_AMOUNT.toLocaleString('vi-VN')}đ trong ngày – Nhập mã & quay ngay nhận quà!`;
+document.getElementById('h-tagline').textContent = `Hóa đơn từ ${CFG.MIN_AMOUNT.toLocaleString('vi-VN')}đ trong ngày – Nhập mã & quay ngay nhận quà!`;
 </script>
 </body>
 </html>
