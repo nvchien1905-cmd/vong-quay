@@ -561,24 +561,24 @@ body.has-ticker .container { margin-top: 0; }
 .top-countdown-bar {
   background: linear-gradient(135deg, rgba(79,46,229,0.18), rgba(124,58,237,0.18));
   border: 1px solid rgba(124,58,237,0.35);
-  border-radius: 12px;
-  padding: 11px 16px;
+  border-radius: 7px;
+  padding: 7px 10px;
   text-align: center;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 .top-countdown-label {
-  font-size: 0.72rem;
+  font-size: 0.43rem;
   color: rgba(255,255,255,0.45);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
+  letter-spacing: 0.6px;
+  margin-bottom: 2px;
 }
 #top-countdown {
-  font-size: 1.05rem;
+  font-size: 0.63rem;
   font-weight: 900;
   color: #A78BFA;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 1px;
+  letter-spacing: 0.6px;
 }
 </style>
 </head>
@@ -773,24 +773,36 @@ const CFG = {
 
   // Giải thưởng đặc biệt cho lượt quay 7 ngày liên tiếp
   PRIZES_SPECIAL: [
-    { label: 'Voucher 100K',  emoji: '👑', color: '#7F1D1D', weight: 35, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Giảm 20%',     emoji: '🌟', color: '#5B21B6', weight: 25, desc: 'Áp dụng cho lần mua tiếp theo' },
-    { label: 'Voucher 200K', emoji: '💎', color: '#065F46', weight: 20, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Giảm 30%',     emoji: '🎉', color: '#9D174D', weight: 12, desc: 'Áp dụng cho lần mua tiếp theo' },
-    { label: 'Voucher 500K', emoji: '🏆', color: '#4C1D95', weight: 5,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Quà siêu VIP', emoji: '🎁', color: '#1E3A5F', weight: 3,  desc: 'Liên hệ quản lý để nhận quà đặc biệt!' },
+    { label: 'Voucher 100K',  emoji: '👑', color: '#7F1D1D', weight: 1, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 500k',     emoji: '🌟', color: '#5B21B6', weight: 0, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 200K', emoji: '💎', color: '#065F46', weight: 0, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 10k',     emoji: '🎉', color: '#9D174D', weight: 15, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 20k', emoji: '🏆', color: '#4C1D95', weight: 5,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Ấm siêu tốc Happytime 1081', emoji: '🎁', color: '#1E3A5F', weight: 1,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Set 10 đĩa bạc nồi chiên không dầu', emoji: '🎁', color: '#1E3A5F', weight: 20,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 15% khi mua chảo/bộ nồi', emoji: '🎁', color: '#1E3A5F', weight: 3,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 30% tối đa 200k khi mua quần áo tại Mamakids', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 10% tối đa 200k tại điện máy Huyền Anh', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Chúc bạn may mắn', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Voucher 500k vẫn chờ đợi bạn!' },
+    { label: 'Voucher giảm 20% tối đa 100k khi mua đồ chơi', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 15% khi mua máy lọc nước', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
   ],
 
   // 100% ô đều là quà trúng thưởng
   PRIZES: [
-    { label: 'Giảm 5%',       emoji: '🌟', color: '#5B21B6', weight: 28, desc: 'Áp dụng cho lần mua tiếp theo' },
-    { label: 'Voucher 20K',   emoji: '💰', color: '#1E40AF', weight: 22, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Giảm 10%',      emoji: '🎉', color: '#9D174D', weight: 18, desc: 'Áp dụng cho lần mua tiếp theo' },
-    { label: 'Quà tặng',      emoji: '🎁', color: '#065F46', weight: 14, desc: 'Nhận quà tại quầy thu ngân' },
-    { label: 'Voucher 50K',   emoji: '💎', color: '#92400E', weight: 10, desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Giảm 15%',      emoji: '✨', color: '#075985', weight: 5,  desc: 'Áp dụng cho lần mua tiếp theo' },
-    { label: 'Voucher 100K',  emoji: '👑', color: '#7F1D1D', weight: 2,  desc: 'Chiết khấu trực tiếp vào hóa đơn' },
-    { label: 'Quà đặc biệt', emoji: '🏆', color: '#4C1D95', weight: 1,  desc: 'Liên hệ nhân viên để nhận quà!' },
+    { label: 'Voucher 100K',  emoji: '👑', color: '#7F1D1D', weight: 1, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 500k',     emoji: '🌟', color: '#5B21B6', weight: 0, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 200K', emoji: '💎', color: '#065F46', weight: 0, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 10k',     emoji: '🎉', color: '#9D174D', weight: 15, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 20k', emoji: '🏆', color: '#4C1D95', weight: 5,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Ấm siêu tốc Happytime 1081', emoji: '🎁', color: '#1E3A5F', weight: 1,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Set 10 đĩa bạc nồi chiên không dầu', emoji: '🎁', color: '#1E3A5F', weight: 20,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 15% khi mua chảo/bộ nồi', emoji: '🎁', color: '#1E3A5F', weight: 3,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 30% tối đa 200k khi mua quần áo tại Mamakids', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 10% tối đa 200k tại điện máy Huyền Anh', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Chúc bạn may mắn', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Voucher 500k vẫn chờ đợi bạn!' },
+    { label: 'Voucher giảm 20% tối đa 100k khi mua đồ chơi', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher giảm 15% khi mua máy lọc nước', emoji: '🎁', color: '#1E3A5F', weight: 11,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
   ],
 };
 
