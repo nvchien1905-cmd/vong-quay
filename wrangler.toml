@@ -1,0 +1,20 @@
+name = "vong-quay"
+main = "src/worker.js"
+compatibility_date = "2024-09-23"
+
+# ── Static assets (file HTML) ────────────────────────────────
+# Thư mục public/ chứa vong-quay-may-man.html
+[assets]
+directory = "./public"
+binding   = "ASSETS"
+
+# ── Cloudflare KV (lưu lịch sử quay thưởng) ─────────────────
+# Sau khi chạy: npx wrangler kv namespace create HISTORY_KV
+# Dán namespace_id vào đây
+[[kv_namespaces]]
+binding      = "HISTORY_KV"
+id           = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# ── Secrets (đặt qua CLI, không lưu ở đây) ───────────────────
+# npx wrangler secret put GOOGLE_CREDENTIALS_JSON
+# (Dán nội dung file credentials.json khi được hỏi)

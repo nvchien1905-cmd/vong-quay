@@ -1,18 +1,21 @@
 {
-  "name": "admin",
+  "name": "vong-quay",
   "version": "1.0.0",
-  "description": "",
-  "main": "proxy-server.js",
+  "description": "Vòng Quay May Mắn — Cloudflare Workers",
   "scripts": {
     "start": "node proxy-server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx wrangler dev",
+    "predeploy": "node -e \"require('fs').copyFileSync('vong-quay-may-man.html','public/vong-quay-may-man.html')\"",
+    "deploy": "npx wrangler deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "googleapis": "^171.4.0",
     "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
   }
 }
