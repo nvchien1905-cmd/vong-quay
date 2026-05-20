@@ -87,6 +87,13 @@ function maskPhone(phone) {
   return phone.slice(0, 4) + '***' + phone.slice(-3);
 }
 
+// Chuẩn hoá SĐT VN: bỏ ký tự không phải số, đổi đầu 84 → 0
+function normalizePhone(p) {
+  p = String(p || '').replace(/\D/g, '');
+  if (p.startsWith('84') && p.length >= 11) p = '0' + p.slice(2);
+  return p;
+}
+
 function extractGroupInfo(c) {
   if (typeof c.groups === 'string' && c.groups.trim())
     return { groupId: c.groupId || null, groupName: c.groups.split(',')[0].trim() };
@@ -300,15 +307,30 @@ async function handleInvoice(url) {
   const code  = (url.searchParams.get('code') || '').toUpperCase();
   if (!phone || !code) return jsonResp({ error: 'Thiếu tham số phone hoặc code' }, 400);
   try {
+    // Bước 1: Xác minh SĐT — lấy customerId thật từ KiotViet
+    // (endpoint /customers?contactNumber lọc đúng, khác với /invoices?customerTel)
+    const custData  = await kiotFetch(`/customers?contactNumber=${encodeURIComponent(phone)}&pageSize=5`);
+    const customers = custData.data || [];
+    if (!customers.length) return jsonResp({ valid: false, reason: 'PHONE_NOT_FOUND' });
+    const customerId = String(customers[0].id);
+
+    // Bước 2: Lấy hóa đơn (KiotViet có thể trả về nhiều hơn dự kiến, không sao)
     const data     = await kiotFetch(
       `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1`
     );
     const invoices = data.data || [];
-    if (!invoices.length) return jsonResp({ valid: false, reason: 'PHONE_NOT_FOUND' });
 
+    // Bước 3: Tìm đúng mã hóa đơn
     const inv = invoices.find(i => (i.code || '').toUpperCase() === code || String(i.id) === code);
     if (!inv) return jsonResp({ valid: false, reason: 'CODE_NOT_FOUND' });
 
+    // Bước 4: Xác minh hóa đơn thực sự thuộc khách hàng có SĐT nhập vào
+    // (so sánh customerId từ bước 1 với customerId trên hóa đơn)
+    if (!inv.customerId || String(inv.customerId) !== customerId) {
+      return jsonResp({ valid: false, reason: 'PHONE_MISMATCH' });
+    }
+
+    // Bước 5: Kiểm tra ngày hôm nay
     const rawDate = inv.purchaseDate || inv.createdDate || inv.modifiedDate;
     let todayOk = false;
     if (rawDate) {
@@ -320,6 +342,7 @@ async function handleInvoice(url) {
     }
     if (!todayOk) return jsonResp({ valid: false, reason: 'NOT_TODAY', invoiceDate: rawDate });
 
+    // Bước 6: Kiểm tra giá trị tối thiểu
     const amount = inv.total || inv.totalPayment || 0;
     if (amount < CFG.MIN_AMOUNT) return jsonResp({ valid: false, reason: 'AMOUNT_TOO_LOW', amount });
 
