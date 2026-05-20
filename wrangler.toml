@@ -13,7 +13,7 @@ binding   = "ASSETS"
 # Dán namespace_id vào đây
 [[kv_namespaces]]
 binding      = "HISTORY_KV"
-id           = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id           = "701b1daffd274570b0e569c7b85bf33d"
 
 # ── Secrets (đặt qua CLI, không lưu ở đây) ───────────────────
 # npx wrangler secret put GOOGLE_CREDENTIALS_JSON
