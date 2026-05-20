@@ -16,7 +16,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -35,7 +35,7 @@ body {
 
 .store-header { text-align: center; }
 .store-header h1 {
-  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  font-size: clamp(1.12rem, 3.2vw, 1.92rem);
   font-weight: 900;
   background: linear-gradient(135deg, #FFD700, #FFA500);
   -webkit-background-clip: text;
@@ -330,7 +330,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 
 /* Loyalty section */
-#section-loyalty { width: 100%; max-width: 400px; }
+#section-loyalty { width: 100%; max-width: 400px; overflow-y: auto; }
 
 .loyalty-result-box {
   margin-top: 18px;
@@ -580,6 +580,17 @@ body.has-ticker .container { margin-top: 0; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.6px;
 }
+.top-cashback-note {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FFD700, #FF8C00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+}
 </style>
 </head>
 
@@ -687,6 +698,7 @@ body.has-ticker .container { margin-top: 0; }
     <div class="top-countdown-bar">
       <div class="top-countdown-label">⏳ Đua TOP 10 tháng này kết thúc sau</div>
       <div id="top-countdown">--</div>
+      <div class="top-cashback-note">💰 Hoàn thêm 3% tổng chi tiêu tháng cho TOP 1, TOP 2 và TOP 3</div>
     </div>
     <div class="top-card">
       <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:3px">
@@ -776,15 +788,15 @@ const CFG = {
   // weight: kích thước ô hiển thị trên bánh xe (độc lập với prob)
   PRIZES_SPECIAL: [
     { label: 'Voucher 100K',  emoji: '👑', color: '#7F1D1D', weight: 10, prob: 1,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
-    { label: 'Voucher 500k',  emoji: '🌟', color: '#5B21B6', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
-    { label: 'Voucher 200K',  emoji: '💎', color: '#065F46', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher 10k',   emoji: '🎉', color: '#9D174D', weight: 7,  prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher 20k',   emoji: '🏆', color: '#4C1D95', weight: 7,  prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Ấm siêu tốc Happytime 1081', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 2, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 500k',  emoji: '🌟', color: '#5B21B6', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Set 10 đĩa bạc nồi chiên không dầu', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 15% khi mua chảo/bộ nồi', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 30% tối đa 200k khi mua quần áo tại Mamakids', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 10% tối đa 200k tại điện máy Huyền Anh', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 200K',  emoji: '💎', color: '#065F46', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Chúc bạn may mắn', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Voucher 500k vẫn chờ đợi bạn!' },
     { label: 'Voucher giảm 20% tối đa 100k khi mua đồ chơi', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 15% khi mua máy lọc nước', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
@@ -794,15 +806,15 @@ const CFG = {
   // weight: kích thước ô hiển thị trên bánh xe (độc lập với prob)
   PRIZES: [
     { label: 'Voucher 100K',  emoji: '👑', color: '#7F1D1D', weight: 10, prob: 1,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
-    { label: 'Voucher 500k',  emoji: '🌟', color: '#5B21B6', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
-    { label: 'Voucher 200K',  emoji: '💎', color: '#065F46', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher 10k',   emoji: '🎉', color: '#9D174D', weight: 7,  prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher 20k',   emoji: '🏆', color: '#4C1D95', weight: 7,  prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Ấm siêu tốc Happytime 1081', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 2, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 500k',  emoji: '🌟', color: '#5B21B6', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Set 10 đĩa bạc nồi chiên không dầu', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 15% khi mua chảo/bộ nồi', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 30% tối đa 200k khi mua quần áo tại Mamakids', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 10% tối đa 200k tại điện máy Huyền Anh', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
+    { label: 'Voucher 200K',  emoji: '💎', color: '#065F46', weight: 10, prob: 0,  desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Chúc bạn may mắn', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Voucher 500k vẫn chờ đợi bạn!' },
     { label: 'Voucher giảm 20% tối đa 100k khi mua đồ chơi', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
     { label: 'Voucher giảm 15% khi mua máy lọc nước', emoji: '🎁', color: '#1E3A5F', weight: 7, prob: 22, desc: 'Liên hệ 0336190599 để được nhận quà!' },
