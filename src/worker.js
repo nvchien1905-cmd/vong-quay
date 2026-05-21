@@ -352,6 +352,11 @@ async function handleInvoice(url) {
       return jsonResp({ valid: false, reason: 'PHONE_MISMATCH' });
     }
 
+    // Bước 4b: Xác minh hóa đơn thuộc đúng 3 chi nhánh (API lọc không hoàn hảo)
+    if (branchIds.length > 0 && !branchIds.includes(inv.branchId)) {
+      return jsonResp({ valid: false, reason: 'WRONG_BRANCH' });
+    }
+
     // Bước 5: Kiểm tra ngày hôm nay
     const rawDate = inv.purchaseDate || inv.createdDate || inv.modifiedDate;
     let todayOk = false;
