@@ -15,7 +15,7 @@ const CFG = {
   RETAILER:      'tongkhohuyenanh01',
   GS_SHEET_ID:   '19Gn0hHao929TSI7GuhAUFtBpEsFjAlb0vvd_N7Xakoo',
   GS_TAB:        'Lich su',
-  MIN_AMOUNT:    200000,
+  MIN_AMOUNT:    499000,
 };
 
 // ── CORS ─────────────────────────────────────────────────────

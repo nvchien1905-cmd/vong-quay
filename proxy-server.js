@@ -478,7 +478,7 @@ const server = http.createServer(async (req, res) => {
       if (!todayOk) { sendJSON(res, 200, { valid: false, reason: 'NOT_TODAY', invoiceDate: rawDate }); return; }
 
       const amount = inv.total || inv.totalPayment || 0;
-      if (amount < 200000) { sendJSON(res, 200, { valid: false, reason: 'AMOUNT_TOO_LOW', amount }); return; }
+      if (amount < 499000) { sendJSON(res, 200, { valid: false, reason: 'AMOUNT_TOO_LOW', amount }); return; }
 
       console.log(`[Invoice] Hop le -> #${inv.code} | ${amount.toLocaleString('vi-VN')}d`);
       sendJSON(res, 200, { valid: true, invoice: inv });
