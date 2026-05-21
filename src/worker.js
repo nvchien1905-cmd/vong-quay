@@ -317,7 +317,10 @@ async function handleInvoices(url) {
     const data = await kiotFetch(
       `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1${buildBranchQs(branchIds)}`
     );
-    return jsonResp(data.data || []);
+    const invoices = (data.data || []).filter(inv =>
+      branchIds.length === 0 || branchIds.includes(inv.branchId)
+    );
+    return jsonResp(invoices);
   } catch (err) {
     return jsonResp({ error: err.message }, 500);
   }

@@ -251,7 +251,8 @@ async function getInvoices(phone) {
       'Retailer':      CFG.RETAILER,
     },
   });
-  return data.data || [];
+  const invoices = data.data || [];
+  return invoices.filter(inv => branchIds.length === 0 || branchIds.includes(inv.branchId));
 }
 
 async function getMonthlyInvoices() {
