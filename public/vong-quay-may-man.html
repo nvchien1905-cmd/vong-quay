@@ -302,11 +302,26 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 .section-wrap { display: contents; }
 
 /* Tab bar */
+.tab-bar-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+}
+.tab-bar-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 2px;
+  width: 48px;
+  background: linear-gradient(to right, transparent, #0f0f1a 85%);
+  pointer-events: none;
+  border-radius: 0 12px 12px 0;
+  transition: opacity 0.3s;
+}
+.tab-bar-wrap.at-end::after { opacity: 0; }
 .tab-bar {
   display: flex;
   gap: 8px;
   width: 100%;
-  max-width: 440px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -936,12 +951,14 @@ body.has-ticker .container { margin-top: 0; }
   </div>
 
   <!-- Tab bar -->
-  <div class="tab-bar">
-    <button class="tab-btn active" id="tab-spin">🎡 Quay Thưởng</button>
-    <button class="tab-btn" id="tab-loyalty">🏆 Điểm Tích Lũy</button>
-    <button class="tab-btn" id="tab-top">🏅 Top 10</button>
-    <button class="tab-btn" id="tab-uudai">🎫 Ưu Đãi</button>
-    <button class="tab-btn" id="tab-hoivien">🌟 Hội Viên</button>
+  <div class="tab-bar-wrap" id="tab-bar-wrap">
+    <div class="tab-bar" id="tab-bar">
+      <button class="tab-btn active" id="tab-spin">🎡 Quay Thưởng</button>
+      <button class="tab-btn" id="tab-loyalty">🏆 Điểm Tích Lũy</button>
+      <button class="tab-btn" id="tab-top">🏅 Top 10</button>
+      <button class="tab-btn" id="tab-uudai">🎫 Ưu Đãi</button>
+      <button class="tab-btn" id="tab-hoivien">🌟 Hội Viên</button>
+    </div>
   </div>
 
   <!-- Section: Quay thưởng -->
@@ -2296,6 +2313,18 @@ async function checkLoyalty() {
 }
 
 // ──── Events ────
+// ── Tab bar fade indicator ────
+(function() {
+  const bar  = document.getElementById('tab-bar');
+  const wrap = document.getElementById('tab-bar-wrap');
+  function update() {
+    const atEnd = bar.scrollLeft + bar.clientWidth >= bar.scrollWidth - 4;
+    wrap.classList.toggle('at-end', atEnd);
+  }
+  bar.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
 document.getElementById('tab-spin').addEventListener('click', () => switchTab('spin'));
 document.getElementById('tab-loyalty').addEventListener('click', () => switchTab('loyalty'));
 document.getElementById('tab-top').addEventListener('click', () => switchTab('top'));
