@@ -147,12 +147,23 @@ async function getCustomerGroups() {
   return _groupsCache;
 }
 
-async function getMonthlyInvoices() {
+async function getMonthlyInvoices(env) {
   const branchIds = await getTargetBranchIds();
   const branchQs  = buildBranchQs(branchIds);
   const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
   const y     = now.getFullYear();
   const m     = now.getMonth();
+  const month = `${String(m + 1).padStart(2, '0')}/${y}`;
+
+  // Trả cache KV nếu còn mới (< 20 phút)
+  const cacheKey = `top_cache_${y}_${m + 1}`;
+  if (env?.HISTORY_KV) {
+    const hit = await env.HISTORY_KV.get(cacheKey, 'json').catch(() => null);
+    if (hit && Date.now() - (hit.ts || 0) < 20 * 60 * 1000) {
+      return { invoices: hit.invoices, month };
+    }
+  }
+
   const from  = `${y}-${String(m + 1).padStart(2, '0')}-01`;
   const lastD = new Date(y, m + 1, 0).getDate();
   const to    = `${y}-${String(m + 1).padStart(2, '0')}-${String(lastD).padStart(2, '0')}`;
@@ -170,7 +181,13 @@ async function getMonthlyInvoices() {
     currentItem += pageSize;
   }
   const invoices = branchIds.length === 0 ? all : all.filter(inv => branchIds.includes(inv.branchId));
-  return { invoices, month: `${String(m + 1).padStart(2, '0')}/${y}` };
+
+  // Lưu cache KV, hết hạn sau 24h
+  if (env?.HISTORY_KV) {
+    await env.HISTORY_KV.put(cacheKey, JSON.stringify({ invoices, ts: Date.now() }), { expirationTtl: 86400 }).catch(() => {});
+  }
+
+  return { invoices, month };
 }
 
 // ════════════════════════════════════════════════════════════
@@ -469,9 +486,9 @@ async function handleLoyalty(url) {
   }
 }
 
-async function handleTopCustomers() {
+async function handleTopCustomers(env) {
   try {
-    const { invoices, month } = await getMonthlyInvoices();
+    const { invoices, month } = await getMonthlyInvoices(env);
     const map = new Map();
     for (const inv of invoices) {
       const id    = inv.customerId || inv.customerCode;
@@ -564,7 +581,7 @@ export default {
 
     // ── /api/top-customers ─────────────────────────────────
     if (url.pathname === '/api/top-customers' && method === 'GET') {
-      return handleTopCustomers();
+      return handleTopCustomers(env);
     }
 
     // ── /api/customergroups ────────────────────────────────
