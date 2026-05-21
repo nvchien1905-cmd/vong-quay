@@ -306,11 +306,17 @@ input::placeholder { color: rgba(255,255,255,0.3); }
   display: flex;
   gap: 8px;
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
 }
+.tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn {
-  flex: 1;
-  padding: 10px 6px;
+  flex: none;
+  white-space: nowrap;
+  padding: 10px 12px;
   border: 2px solid rgba(255,215,0,0.25);
   border-radius: 12px;
   background: rgba(255,255,255,0.04);
@@ -770,6 +776,137 @@ body.has-ticker .container { margin-top: 0; }
 }
 .uudai-note-item:last-child { margin-bottom: 0; }
 .uudai-note-dot { flex-shrink: 0; color: #FCA5A5; font-weight: 900; }
+
+/* ── Hội Viên section ── */
+#section-hoivien {
+  width: 100%;
+  max-width: 420px;
+  overflow-y: auto;
+}
+.hv-hero {
+  background: linear-gradient(145deg, #0f0a2e 0%, #1e1060 45%, #2d1b69 100%);
+  border: 1px solid rgba(167,139,250,0.45);
+  border-radius: 18px;
+  padding: 20px 18px 16px;
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.hv-hero::before {
+  content: '';
+  position: absolute;
+  top: -30px; left: 50%; transform: translateX(-50%);
+  width: 200px; height: 120px;
+  background: radial-gradient(ellipse, rgba(167,139,250,0.25), transparent 70%);
+  pointer-events: none;
+}
+.hv-hero-icon { font-size: 2.2rem; display: block; margin-bottom: 8px; filter: drop-shadow(0 0 10px rgba(167,139,250,0.6)); }
+.hv-hero-title {
+  font-size: 0.7rem; font-weight: 900; letter-spacing: 1.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+.hv-hero-name {
+  font-size: 1.05rem; font-weight: 900; color: white;
+  letter-spacing: 0.5px; line-height: 1.35;
+}
+
+.hv-section-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.67rem; font-weight: 900; letter-spacing: 1.2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.35);
+  margin: 14px 0 8px;
+}
+.hv-section-label::before, .hv-section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+
+/* Mục 1 – Thể Lệ */
+.hv-thele-card {
+  background: linear-gradient(145deg, #1a1060, #0d0838);
+  border: 1px solid rgba(99,102,241,0.4);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.hv-thele-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0;
+}
+.hv-thele-row + .hv-thele-row {
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.hv-thele-icon-wrap {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+.hv-icon-blue   { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25); }
+.hv-icon-purple { background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.25); }
+.hv-thele-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 3px; letter-spacing: 0.3px; }
+.hv-thele-value {
+  font-size: 1.05rem; font-weight: 900; line-height: 1.1;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hv-thele-sub { font-size: 0.74rem; color: rgba(255,255,255,0.55); margin-top: 3px; line-height: 1.4; }
+.hv-or-divider {
+  text-align: center; font-size: 0.68rem; font-weight: 900;
+  color: rgba(255,255,255,0.22); letter-spacing: 1px; padding: 2px 0;
+  border-top: 1px dashed rgba(255,255,255,0.08);
+}
+
+/* Mục 2 – Quyền Lợi */
+.hv-benefit-card {
+  border-radius: 16px; padding: 16px 16px 14px;
+  margin-bottom: 10px; position: relative; overflow: hidden;
+}
+.hv-benefit-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.06), transparent 60%);
+  pointer-events: none;
+}
+.hv-bc-gold  { background: linear-gradient(145deg,#2a1c00,#1a1100); border:1px solid rgba(234,179,8,0.4); }
+.hv-bc-blue  { background: linear-gradient(145deg,#0d2040,#060f20); border:1px solid rgba(59,130,246,0.4); }
+.hv-bc-pink  { background: linear-gradient(145deg,#3d0f30,#200818); border:1px solid rgba(236,72,153,0.4); }
+.hv-benefit-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.hv-benefit-emoji { font-size: 1.7rem; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); flex-shrink: 0; }
+.hv-benefit-title { font-size: 0.84rem; font-weight: 900; color: white; line-height: 1.3; }
+.hv-benefit-sub   { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+.hv-pct-row { display: flex; align-items: baseline; gap: 6px; }
+.hv-pct {
+  font-size: 3rem; font-weight: 900; line-height: 1;
+  background: linear-gradient(135deg,#FFD700,#FF8C00);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(255,165,0,0.3));
+}
+.hv-pct-label { font-size: 0.8rem; color: rgba(255,255,255,0.65); font-weight: 700; }
+.hv-pct-max   { font-size: 0.72rem; color: rgba(255,255,255,0.38); margin-top: 4px; font-style: italic; }
+.hv-tag {
+  display: inline-block; font-size: 0.62rem; font-weight: 800;
+  padding: 2px 8px; border-radius: 6px; margin-top: 8px;
+  letter-spacing: 0.4px; text-transform: uppercase;
+}
+.hv-tag-gold   { background: rgba(234,179,8,0.12); border:1px solid rgba(234,179,8,0.3); color:#FDE68A; }
+.hv-tag-blue   { background: rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.3); color:#93C5FD; }
+.hv-tag-pink   { background: rgba(236,72,153,0.12); border:1px solid rgba(236,72,153,0.3); color:#F9A8D4; }
+
+/* Mục 3 – Quy Định */
+.hv-rules-card {
+  background: linear-gradient(135deg,rgba(239,68,68,0.08),rgba(124,58,237,0.06));
+  border: 1px solid rgba(239,68,68,0.28);
+  border-radius: 16px; padding: 16px; margin-bottom: 4px;
+}
+.hv-rules-title { font-size: 0.78rem; font-weight: 900; color: #FCA5A5; margin-bottom: 10px; }
+.hv-rule-item {
+  display: flex; gap: 9px; align-items: flex-start;
+  font-size: 0.76rem; color: rgba(255,255,255,0.6);
+  margin-bottom: 8px; line-height: 1.5;
+}
+.hv-rule-item:last-child { margin-bottom: 0; }
+.hv-rule-dot { color: #FCA5A5; font-weight: 900; flex-shrink: 0; margin-top: 1px; }
 </style>
 </head>
 
@@ -804,6 +941,7 @@ body.has-ticker .container { margin-top: 0; }
     <button class="tab-btn" id="tab-loyalty">🏆 Điểm Tích Lũy</button>
     <button class="tab-btn" id="tab-top">🏅 Top 10</button>
     <button class="tab-btn" id="tab-uudai">🎫 Ưu Đãi</button>
+    <button class="tab-btn" id="tab-hoivien">🌟 Hội Viên</button>
   </div>
 
   <!-- Section: Quay thưởng -->
@@ -868,6 +1006,109 @@ body.has-ticker .container { margin-top: 0; }
           <div class="loyalty-info-row"><span>💰 Tổng mua hàng</span><strong id="loy-total">—</strong></div>
           <div class="loyalty-info-row"><span>🏷️ Hạng thành viên</span><strong id="loy-group">—</strong></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Hội Viên -->
+  <div id="section-hoivien" class="hidden">
+    <!-- Hero -->
+    <div class="hv-hero">
+      <span class="hv-hero-icon">🌟</span>
+      <div class="hv-hero-title">Chương trình</div>
+      <div class="hv-hero-name">HỘI VIÊN GIA DỤNG<br>HUYỀN ANH</div>
+    </div>
+
+    <!-- Mục 1: Thể Lệ -->
+    <div class="hv-section-label">🎫 Mục 1 — Thể Lệ Chương Trình</div>
+    <div class="hv-thele-card">
+      <div class="hv-thele-row">
+        <div class="hv-thele-icon-wrap hv-icon-blue">🧾</div>
+        <div>
+          <div class="hv-thele-label">Mua hóa đơn từ</div>
+          <div class="hv-thele-value">2.000.000đ</div>
+          <div class="hv-thele-sub">Trong <strong style="color:white">1 lần mua</strong> → Tặng thẻ hội viên <strong style="color:#4ADE80">miễn phí</strong></div>
+        </div>
+      </div>
+      <div class="hv-or-divider">HOẶC</div>
+      <div class="hv-thele-row">
+        <div class="hv-thele-icon-wrap hv-icon-purple">💳</div>
+        <div>
+          <div class="hv-thele-label">Mua thẻ hội viên</div>
+          <div class="hv-thele-value">100.000đ</div>
+          <div class="hv-thele-sub">Tương đương hóa đơn <strong style="color:white">2.000.000đ</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mục 2: Quyền Lợi -->
+    <div class="hv-section-label">💎 Mục 2 — Quyền Lợi Hội Viên</div>
+
+    <!-- Benefit 1: Giảm 5% tổng hóa đơn -->
+    <div class="hv-benefit-card hv-bc-gold">
+      <div class="hv-benefit-top">
+        <span class="hv-benefit-emoji">💰</span>
+        <div>
+          <div class="hv-benefit-title">Giảm ngay trên tổng hóa đơn</div>
+          <div class="hv-benefit-sub">Áp dụng tại Gia Dụng Huyền Anh</div>
+        </div>
+      </div>
+      <div class="hv-pct-row">
+        <div class="hv-pct">5%</div>
+        <div class="hv-pct-label">TỔNG HÓA ĐƠN</div>
+      </div>
+      <div class="hv-tag hv-tag-gold">Không giới hạn lượt</div>
+    </div>
+
+    <!-- Benefit 2: VIP Diamond -->
+    <div class="hv-benefit-card hv-bc-blue">
+      <div class="hv-benefit-top">
+        <span class="hv-benefit-emoji">💎</span>
+        <div>
+          <div class="hv-benefit-title">Hạng VIP Diamond<br>Điện Máy Huyền Anh</div>
+          <div class="hv-benefit-sub">Giảm thêm trên sản phẩm ĐM Huyền Anh</div>
+        </div>
+      </div>
+      <div class="hv-pct-row">
+        <div class="hv-pct">5%</div>
+        <div class="hv-pct-label">GIẢM THÊM</div>
+      </div>
+      <div class="hv-pct-max">Tối đa 100.000đ / lượt • Toàn bộ sản phẩm (trừ hàng thanh lý)</div>
+      <div class="hv-tag hv-tag-blue">Không giới hạn số lượt</div>
+    </div>
+
+    <!-- Benefit 3: Mamakids -->
+    <div class="hv-benefit-card hv-bc-pink">
+      <div class="hv-benefit-top">
+        <span class="hv-benefit-emoji">👗</span>
+        <div>
+          <div class="hv-benefit-title">Voucher Mamakids<br>Quần áo trẻ em</div>
+          <div class="hv-benefit-sub">Tặng 01 voucher khi kích hoạt thẻ</div>
+        </div>
+      </div>
+      <div class="hv-pct-row">
+        <div class="hv-pct">20%</div>
+        <div class="hv-pct-label">VOUCHER</div>
+      </div>
+      <div class="hv-pct-max">Tối đa 200.000đ / lượt dùng</div>
+      <div class="hv-tag hv-tag-pink">01 voucher khi kích hoạt</div>
+    </div>
+
+    <!-- Mục 3: Quy Định -->
+    <div class="hv-section-label">📋 Mục 3 — Quy Định Sử Dụng</div>
+    <div class="hv-rules-card">
+      <div class="hv-rules-title">⚠️ Lưu ý quan trọng</div>
+      <div class="hv-rule-item">
+        <span class="hv-rule-dot">•</span>
+        <span>Thẻ có hiệu lực <strong style="color:#FFD700">2 năm</strong>, từ năm thứ 3 chỉ <strong style="color:#FFD700">30.000đ/năm</strong> để duy trì</span>
+      </div>
+      <div class="hv-rule-item">
+        <span class="hv-rule-dot">•</span>
+        <span>Ưu đãi Điện Máy &amp; Voucher Mamakids có hiệu lực sau <strong style="color:#FFD700">3 ngày</strong> kể từ ngày kích hoạt thẻ</span>
+      </div>
+      <div class="hv-rule-item">
+        <span class="hv-rule-dot">•</span>
+        <span>Ưu đãi <strong style="color:#FCA5A5">không cộng dồn</strong> với chương trình <strong style="color:white">Thanh lý</strong> hoặc <strong style="color:white">Flash Sale</strong></span>
       </div>
     </div>
   </div>
@@ -1974,11 +2215,11 @@ async function initLanPanel() {
 
 // ──── Tab switching ────
 function switchTab(tab) {
-  ['spin','loyalty','top','uudai'].forEach(t => {
+  ['spin','loyalty','top','uudai','hoivien'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
   });
-  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty' || tab === 'uudai') ? 'auto' : 'hidden';
+  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty' || tab === 'uudai' || tab === 'hoivien') ? 'auto' : 'hidden';
   if (tab === 'spin') {
     document.getElementById('loyalty-phone-input').value = '';
     setLoyaltyMsg('', '');
@@ -2059,6 +2300,7 @@ document.getElementById('tab-spin').addEventListener('click', () => switchTab('s
 document.getElementById('tab-loyalty').addEventListener('click', () => switchTab('loyalty'));
 document.getElementById('tab-top').addEventListener('click', () => switchTab('top'));
 document.getElementById('tab-uudai').addEventListener('click', () => switchTab('uudai'));
+document.getElementById('tab-hoivien').addEventListener('click', () => switchTab('hoivien'));
 setInterval(() => { _topLoaded = false; if (!document.getElementById('section-top').classList.contains('hidden')) loadTopCustomers(); }, 5 * 60 * 1000);
 document.getElementById('loyalty-check-btn').addEventListener('click', checkLoyalty);
 document.getElementById('loyalty-phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkLoyalty(); });
