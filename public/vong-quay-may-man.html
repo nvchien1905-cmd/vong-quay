@@ -329,14 +329,15 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn {
-  flex: none;
-  white-space: nowrap;
-  padding: 10px 12px;
+  flex: 1;
+  padding: 9px 4px;
   border: 2px solid rgba(255,215,0,0.25);
   border-radius: 12px;
   background: rgba(255,255,255,0.04);
   color: rgba(255,255,255,0.55);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  word-break: keep-all;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
