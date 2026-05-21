@@ -166,8 +166,7 @@ async function getMonthlyInvoices() {
     );
     const items = data.data || [];
     all.push(...items);
-    // Dừng khi hết trang hoặc đã đủ 2000 hóa đơn (giới hạn subrequest Workers)
-    if (items.length < pageSize || all.length >= 2000) break;
+    if (items.length < pageSize) break;
     currentItem += pageSize;
   }
   return { invoices: all, month: `${String(m + 1).padStart(2, '0')}/${y}` };
@@ -559,6 +558,36 @@ export default {
     if (url.pathname === '/api/customergroups' && method === 'GET') {
       try {
         return jsonResp(await getCustomerGroups());
+      } catch (err) {
+        return jsonResp({ error: err.message }, 500);
+      }
+    }
+
+    // ── /api/debug-branches (tạm thời để kiểm tra) ─────────
+    if (url.pathname === '/api/debug-branches' && method === 'GET') {
+      try {
+        const data     = await kiotFetch('/branches');
+        const branches = Array.isArray(data) ? data : (data.data || []);
+        const ids      = await getTargetBranchIds();
+        const branchQs = buildBranchQs(ids);
+        // Lấy 1 trang hóa đơn tháng này để kiểm tra branchName
+        const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+        const from = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+        const to   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(new Date(now.getFullYear(),now.getMonth()+1,0).getDate()).padStart(2,'0')}`;
+        const invData  = await kiotFetch(`/invoices?pageSize=50&currentItem=0&status=1&fromPurchaseDate=${from}&toPurchaseDate=${to}${branchQs}`);
+        const invItems = invData.data || [];
+        const branchDist = {};
+        for (const inv of invItems) {
+          const bn = inv.branchName || '(unknown)';
+          branchDist[bn] = (branchDist[bn] || 0) + 1;
+        }
+        return jsonResp({
+          targetBranches: TARGET_BRANCHES,
+          matchedIds: ids,
+          branchQs,
+          sampleInvoiceCount: invItems.length,
+          branchDistribution: branchDist,
+        });
       } catch (err) {
         return jsonResp({ error: err.message }, 500);
       }

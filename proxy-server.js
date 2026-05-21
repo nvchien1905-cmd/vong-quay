@@ -277,7 +277,7 @@ async function getMonthlyInvoices() {
     });
     const items = data.data || [];
     all.push(...items);
-    if (items.length < pageSize || all.length >= 2000) break;
+    if (items.length < pageSize) break;
     currentItem += pageSize;
   }
   return { invoices: all, month: `${String(m + 1).padStart(2, '0')}/${y}` };
