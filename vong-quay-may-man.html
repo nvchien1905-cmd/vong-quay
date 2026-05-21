@@ -310,12 +310,12 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 .tab-btn {
   flex: 1;
-  padding: 12px 10px;
+  padding: 10px 6px;
   border: 2px solid rgba(255,215,0,0.25);
   border-radius: 12px;
   background: rgba(255,255,255,0.04);
   color: rgba(255,255,255,0.55);
-  font-size: 0.86rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
@@ -602,6 +602,174 @@ body.has-ticker .container { margin-top: 0; }
   letter-spacing: 0.3px;
   line-height: 1.4;
 }
+
+/* ── Ưu Đãi Thành Viên ── */
+#section-uudai {
+  width: 100%;
+  max-width: 420px;
+  overflow-y: auto;
+}
+.uudai-header-card {
+  background: linear-gradient(145deg, #1a1042 0%, #2d1b69 50%, #1a1042 100%);
+  border: 1px solid rgba(124,58,237,0.5);
+  border-radius: 18px;
+  padding: 22px 20px 18px;
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.uudai-header-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 60%;
+  background: radial-gradient(ellipse at 50% -10%, rgba(167,139,250,0.22), transparent 70%);
+  pointer-events: none;
+}
+.uudai-card-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFD700, #FF8C00);
+  color: #1a0800;
+  font-size: 0.62rem;
+  font-weight: 900;
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.uudai-header-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.uudai-free-price {
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.uudai-free-suffix {
+  font-size: 1.1rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.uudai-free-label {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+}
+.uudai-activate-note {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.65);
+  background: rgba(124,58,237,0.15);
+  border: 1px solid rgba(124,58,237,0.35);
+  border-radius: 10px;
+  padding: 9px 14px;
+  line-height: 1.5;
+}
+.uudai-section-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.38);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 4px 0 10px;
+  text-align: center;
+}
+.uudai-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.uudai-benefit-card {
+  border-radius: 14px;
+  padding: 16px 14px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.uudai-benefit-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.07), transparent 65%);
+  pointer-events: none;
+}
+.uudai-bc-blue  { background: linear-gradient(145deg,#1e3a5f,#0f2741); border:1px solid rgba(59,130,246,0.35); }
+.uudai-bc-pink  { background: linear-gradient(145deg,#4a1942,#2a0e2e); border:1px solid rgba(236,72,153,0.35); }
+.uudai-bc-amber { background: linear-gradient(145deg,#3d2800,#1e1400); border:1px solid rgba(245,158,11,0.35); }
+.uudai-bc-teal  { background: linear-gradient(145deg,#0d3333,#061a1a); border:1px solid rgba(20,184,166,0.35); }
+.uudai-bc-water {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(145deg,#0c2a3d,#051520);
+  border:1px solid rgba(14,165,233,0.35);
+}
+.uudai-benefit-icon {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+}
+.uudai-benefit-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+.uudai-discount-pct {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #FFD700, #FF8C00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(255,165,0,0.35));
+}
+.uudai-discount-max {
+  font-size: 0.66rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 3px;
+  font-style: italic;
+}
+.uudai-note-card {
+  background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(185,28,28,0.06));
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 14px;
+  padding: 15px 16px;
+  margin-top: 2px;
+}
+.uudai-note-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #FCA5A5;
+  margin-bottom: 9px;
+  letter-spacing: 0.3px;
+}
+.uudai-note-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 7px;
+  line-height: 1.45;
+}
+.uudai-note-item:last-child { margin-bottom: 0; }
+.uudai-note-dot { flex-shrink: 0; color: #FCA5A5; font-weight: 900; }
 </style>
 </head>
 
@@ -635,6 +803,7 @@ body.has-ticker .container { margin-top: 0; }
     <button class="tab-btn active" id="tab-spin">🎡 Quay Thưởng</button>
     <button class="tab-btn" id="tab-loyalty">🏆 Điểm Tích Lũy</button>
     <button class="tab-btn" id="tab-top">🏅 Top 10</button>
+    <button class="tab-btn" id="tab-uudai">🎫 Ưu Đãi</button>
   </div>
 
   <!-- Section: Quay thưởng -->
@@ -699,6 +868,73 @@ body.has-ticker .container { margin-top: 0; }
           <div class="loyalty-info-row"><span>💰 Tổng mua hàng</span><strong id="loy-total">—</strong></div>
           <div class="loyalty-info-row"><span>🏷️ Hạng thành viên</span><strong id="loy-group">—</strong></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Ưu Đãi Thành Viên -->
+  <div id="section-uudai" class="hidden">
+    <!-- Header card -->
+    <div class="uudai-header-card">
+      <div class="uudai-card-badge">✨ Thẻ thành viên miễn phí</div>
+      <div class="uudai-header-title">🎫 TỔNG KHO HUYỀN ANH</div>
+      <div class="uudai-free-price">0<span class="uudai-free-suffix">đ</span></div>
+      <div class="uudai-free-label">Phí thành viên mỗi năm</div>
+      <div class="uudai-activate-note">⏱️ Ưu đãi có hiệu lực sau <strong style="color:#FFD700">3 ngày</strong> kể từ ngày kích hoạt thẻ</div>
+    </div>
+    <!-- Benefits section -->
+    <div class="uudai-section-title">✨ Ưu đãi dành cho thành viên</div>
+    <div class="uudai-grid">
+      <!-- Điện Máy Huyền Anh -->
+      <div class="uudai-benefit-card uudai-bc-blue">
+        <span class="uudai-benefit-icon">🏪</span>
+        <div class="uudai-benefit-name">Điện Máy<br>Huyền Anh</div>
+        <div class="uudai-discount-pct">10%</div>
+        <div class="uudai-discount-max">Tối đa 200.000đ</div>
+      </div>
+      <!-- Mamakids -->
+      <div class="uudai-benefit-card uudai-bc-pink">
+        <span class="uudai-benefit-icon">👗</span>
+        <div class="uudai-benefit-name">Mamakids<br>Quần áo trẻ em</div>
+        <div class="uudai-discount-pct">30%</div>
+        <div class="uudai-discount-max">Tối đa 200.000đ</div>
+      </div>
+      <!-- Chảo / Bộ nồi -->
+      <div class="uudai-benefit-card uudai-bc-amber">
+        <span class="uudai-benefit-icon">🍳</span>
+        <div class="uudai-benefit-name">Chảo &amp; Bộ nồi<br>cao cấp</div>
+        <div class="uudai-discount-pct">15%</div>
+        <div class="uudai-discount-max">&nbsp;</div>
+      </div>
+      <!-- Đồ chơi -->
+      <div class="uudai-benefit-card uudai-bc-teal">
+        <span class="uudai-benefit-icon">🧸</span>
+        <div class="uudai-benefit-name">Đồ chơi<br>trẻ em</div>
+        <div class="uudai-discount-pct">20%</div>
+        <div class="uudai-discount-max">Tối đa 100.000đ</div>
+      </div>
+      <!-- Máy lọc nước (full-width) -->
+      <div class="uudai-benefit-card uudai-bc-water">
+        <span class="uudai-benefit-icon" style="font-size:2rem;margin:0">💧</span>
+        <div style="flex:1">
+          <div class="uudai-benefit-name" style="margin-bottom:4px">Máy lọc nước</div>
+          <div style="display:flex;align-items:baseline;gap:6px">
+            <div class="uudai-discount-pct" style="font-size:1.8rem">15%</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.42)">mỗi lần mua</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Note card -->
+    <div class="uudai-note-card">
+      <div class="uudai-note-title">⚠️ Lưu ý quan trọng</div>
+      <div class="uudai-note-item">
+        <span class="uudai-note-dot">•</span>
+        <span>Ưu đãi <strong style="color:#FCA5A5">không cộng dồn</strong> với chương trình <strong style="color:white">Thanh lý</strong> hoặc <strong style="color:white">Flash Sale</strong></span>
+      </div>
+      <div class="uudai-note-item">
+        <span class="uudai-note-dot">•</span>
+        <span>Hiệu lực sau <strong style="color:#FFD700">3 ngày</strong> kể từ ngày kích hoạt thẻ thành viên</span>
       </div>
     </div>
   </div>
@@ -1738,11 +1974,11 @@ async function initLanPanel() {
 
 // ──── Tab switching ────
 function switchTab(tab) {
-  ['spin','loyalty','top'].forEach(t => {
+  ['spin','loyalty','top','uudai'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
   });
-  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty') ? 'auto' : 'hidden';
+  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty' || tab === 'uudai') ? 'auto' : 'hidden';
   if (tab === 'spin') {
     document.getElementById('loyalty-phone-input').value = '';
     setLoyaltyMsg('', '');
@@ -1822,6 +2058,7 @@ async function checkLoyalty() {
 document.getElementById('tab-spin').addEventListener('click', () => switchTab('spin'));
 document.getElementById('tab-loyalty').addEventListener('click', () => switchTab('loyalty'));
 document.getElementById('tab-top').addEventListener('click', () => switchTab('top'));
+document.getElementById('tab-uudai').addEventListener('click', () => switchTab('uudai'));
 setInterval(() => { _topLoaded = false; if (!document.getElementById('section-top').classList.contains('hidden')) loadTopCustomers(); }, 5 * 60 * 1000);
 document.getElementById('loyalty-check-btn').addEventListener('click', checkLoyalty);
 document.getElementById('loyalty-phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkLoyalty(); });
