@@ -956,8 +956,7 @@ body.has-ticker .container { margin-top: 0; }
       <button class="tab-btn active" id="tab-spin">🎡 Quay Thưởng</button>
       <button class="tab-btn" id="tab-loyalty">🏆 Điểm Tích Lũy</button>
       <button class="tab-btn" id="tab-top">🏅 Top 10</button>
-      <button class="tab-btn" id="tab-uudai">🎫 Ưu Đãi</button>
-      <button class="tab-btn" id="tab-hoivien">🌟 Hội Viên</button>
+  <button class="tab-btn" id="tab-hoivien">🌟 Hội Viên</button>
     </div>
   </div>
 
@@ -1126,73 +1125,6 @@ body.has-ticker .container { margin-top: 0; }
       <div class="hv-rule-item">
         <span class="hv-rule-dot">•</span>
         <span>Ưu đãi <strong style="color:#FCA5A5">không cộng dồn</strong> với chương trình <strong style="color:white">Thanh lý</strong> hoặc <strong style="color:white">Flash Sale</strong></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section: Ưu Đãi Thành Viên -->
-  <div id="section-uudai" class="hidden">
-    <!-- Header card -->
-    <div class="uudai-header-card">
-      <div class="uudai-card-badge">✨ Thẻ thành viên miễn phí</div>
-      <div class="uudai-header-title">🎫 TỔNG KHO HUYỀN ANH</div>
-      <div class="uudai-free-price">0<span class="uudai-free-suffix">đ</span></div>
-      <div class="uudai-free-label">Phí thành viên mỗi năm</div>
-      <div class="uudai-activate-note">⏱️ Ưu đãi có hiệu lực sau <strong style="color:#FFD700">3 ngày</strong> kể từ ngày kích hoạt thẻ</div>
-    </div>
-    <!-- Benefits section -->
-    <div class="uudai-section-title">✨ Ưu đãi dành cho thành viên</div>
-    <div class="uudai-grid">
-      <!-- Điện Máy Huyền Anh -->
-      <div class="uudai-benefit-card uudai-bc-blue">
-        <span class="uudai-benefit-icon">🏪</span>
-        <div class="uudai-benefit-name">Điện Máy<br>Huyền Anh</div>
-        <div class="uudai-discount-pct">10%</div>
-        <div class="uudai-discount-max">Tối đa 200.000đ</div>
-      </div>
-      <!-- Mamakids -->
-      <div class="uudai-benefit-card uudai-bc-pink">
-        <span class="uudai-benefit-icon">👗</span>
-        <div class="uudai-benefit-name">Mamakids<br>Quần áo trẻ em</div>
-        <div class="uudai-discount-pct">30%</div>
-        <div class="uudai-discount-max">Tối đa 200.000đ</div>
-      </div>
-      <!-- Chảo / Bộ nồi -->
-      <div class="uudai-benefit-card uudai-bc-amber">
-        <span class="uudai-benefit-icon">🍳</span>
-        <div class="uudai-benefit-name">Chảo &amp; Bộ nồi<br>cao cấp</div>
-        <div class="uudai-discount-pct">15%</div>
-        <div class="uudai-discount-max">&nbsp;</div>
-      </div>
-      <!-- Đồ chơi -->
-      <div class="uudai-benefit-card uudai-bc-teal">
-        <span class="uudai-benefit-icon">🧸</span>
-        <div class="uudai-benefit-name">Đồ chơi<br>trẻ em</div>
-        <div class="uudai-discount-pct">20%</div>
-        <div class="uudai-discount-max">Tối đa 100.000đ</div>
-      </div>
-      <!-- Máy lọc nước (full-width) -->
-      <div class="uudai-benefit-card uudai-bc-water">
-        <span class="uudai-benefit-icon" style="font-size:2rem;margin:0">💧</span>
-        <div style="flex:1">
-          <div class="uudai-benefit-name" style="margin-bottom:4px">Máy lọc nước</div>
-          <div style="display:flex;align-items:baseline;gap:6px">
-            <div class="uudai-discount-pct" style="font-size:1.8rem">15%</div>
-            <div style="font-size:0.7rem;color:rgba(255,255,255,0.42)">mỗi lần mua</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Note card -->
-    <div class="uudai-note-card">
-      <div class="uudai-note-title">⚠️ Lưu ý quan trọng</div>
-      <div class="uudai-note-item">
-        <span class="uudai-note-dot">•</span>
-        <span>Ưu đãi <strong style="color:#FCA5A5">không cộng dồn</strong> với chương trình <strong style="color:white">Thanh lý</strong> hoặc <strong style="color:white">Flash Sale</strong></span>
-      </div>
-      <div class="uudai-note-item">
-        <span class="uudai-note-dot">•</span>
-        <span>Hiệu lực sau <strong style="color:#FFD700">3 ngày</strong> kể từ ngày kích hoạt thẻ thành viên</span>
       </div>
     </div>
   </div>
@@ -2232,11 +2164,11 @@ async function initLanPanel() {
 
 // ──── Tab switching ────
 function switchTab(tab) {
-  ['spin','loyalty','top','uudai','hoivien'].forEach(t => {
+  ['spin','loyalty','top','hoivien'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
   });
-  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty' || tab === 'uudai' || tab === 'hoivien') ? 'auto' : 'hidden';
+  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty' || tab === 'hoivien') ? 'auto' : 'hidden';
   if (tab === 'spin') {
     document.getElementById('loyalty-phone-input').value = '';
     setLoyaltyMsg('', '');
@@ -2328,7 +2260,6 @@ async function checkLoyalty() {
 document.getElementById('tab-spin').addEventListener('click', () => switchTab('spin'));
 document.getElementById('tab-loyalty').addEventListener('click', () => switchTab('loyalty'));
 document.getElementById('tab-top').addEventListener('click', () => switchTab('top'));
-document.getElementById('tab-uudai').addEventListener('click', () => switchTab('uudai'));
 document.getElementById('tab-hoivien').addEventListener('click', () => switchTab('hoivien'));
 setInterval(() => { _topLoaded = false; if (!document.getElementById('section-top').classList.contains('hidden')) loadTopCustomers(); }, 5 * 60 * 1000);
 document.getElementById('loyalty-check-btn').addEventListener('click', checkLoyalty);
