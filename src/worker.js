@@ -48,8 +48,11 @@ function toB64Url(input) {
 // ════════════════════════════════════════════════════════════
 //  KiotViet API
 // ════════════════════════════════════════════════════════════
+const TARGET_BRANCHES = ['Gia dụng Hoài Đức', 'Gia dụng Hồng Hà', 'Gia dụng Phương Đình'];
+
 // Cache token trong module-scope (tồn tại trong cùng isolate)
 let _kvTok = null, _kvTokExp = 0;
+let _branchIds = null, _branchIdsAt = 0;
 
 async function getKvToken() {
   if (_kvTok && Date.now() < _kvTokExp) return _kvTok;
@@ -109,6 +112,22 @@ function extractGroupInfo(c) {
   return { groupId: null, groupName: '' };
 }
 
+async function getTargetBranchIds() {
+  if (_branchIds && Date.now() - _branchIdsAt < 60 * 60 * 1000) return _branchIds;
+  const data     = await kiotFetch('/branches');
+  const branches = Array.isArray(data) ? data : (data.data || []);
+  const ids = branches
+    .filter(b => TARGET_BRANCHES.includes(b.branchName || b.name || ''))
+    .map(b => b.id);
+  _branchIds   = ids;
+  _branchIdsAt = Date.now();
+  return ids;
+}
+
+function buildBranchQs(ids) {
+  return ids.length ? '&' + ids.map(id => `branchId=${id}`).join('&') : '';
+}
+
 // Cache nhóm khách hàng (per-isolate)
 let _groupsCache = null, _groupsCacheAt = 0;
 
@@ -129,6 +148,8 @@ async function getCustomerGroups() {
 }
 
 async function getMonthlyInvoices() {
+  const branchIds = await getTargetBranchIds();
+  const branchQs  = buildBranchQs(branchIds);
   const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
   const y     = now.getFullYear();
   const m     = now.getMonth();
@@ -141,7 +162,7 @@ async function getMonthlyInvoices() {
   const pageSize  = 100;
   while (true) {
     const data  = await kiotFetch(
-      `/invoices?pageSize=${pageSize}&currentItem=${currentItem}&status=1&fromPurchaseDate=${from}&toPurchaseDate=${to}`
+      `/invoices?pageSize=${pageSize}&currentItem=${currentItem}&status=1&fromPurchaseDate=${from}&toPurchaseDate=${to}${branchQs}`
     );
     const items = data.data || [];
     all.push(...items);
@@ -293,8 +314,9 @@ async function handleInvoices(url) {
   const phone = url.searchParams.get('phone');
   if (!phone) return jsonResp({ error: 'Thiếu tham số phone' }, 400);
   try {
+    const branchIds = await getTargetBranchIds();
     const data = await kiotFetch(
-      `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1`
+      `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1${buildBranchQs(branchIds)}`
     );
     return jsonResp(data.data || []);
   } catch (err) {
@@ -315,8 +337,9 @@ async function handleInvoice(url) {
     const customerId = String(customers[0].id);
 
     // Bước 2: Lấy hóa đơn (KiotViet có thể trả về nhiều hơn dự kiến, không sao)
+    const branchIds = await getTargetBranchIds();
     const data     = await kiotFetch(
-      `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1`
+      `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1${buildBranchQs(branchIds)}`
     );
     const invoices = data.data || [];
 

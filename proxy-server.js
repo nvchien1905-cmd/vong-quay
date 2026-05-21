@@ -163,7 +163,9 @@ async function gsClear() {
 }
 
 // ──── KiotViet API ────
+const TARGET_BRANCHES = ['Gia dụng Hoài Đức', 'Gia dụng Hồng Hà', 'Gia dụng Phương Đình'];
 let _tok = null, _tokExp = 0;
+let _branchIds = null, _branchIdsAt = 0;
 
 function httpsRequest(options, body) {
   return new Promise((resolve, reject) => {
@@ -213,9 +215,33 @@ async function getToken() {
   return _tok;
 }
 
-async function getInvoices(phone) {
+async function getTargetBranchIds() {
+  if (_branchIds && Date.now() - _branchIdsAt < 60 * 60 * 1000) return _branchIds;
   const token = await getToken();
-  const qs    = `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1`;
+  const data  = await httpsRequest({
+    hostname: 'public.kiotapi.com',
+    path:     '/branches',
+    method:   'GET',
+    headers:  { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
+  });
+  const branches = Array.isArray(data) ? data : (data.data || []);
+  const ids = branches
+    .filter(b => TARGET_BRANCHES.includes(b.branchName || b.name || ''))
+    .map(b => b.id);
+  _branchIds   = ids;
+  _branchIdsAt = Date.now();
+  console.log('[Branches] IDs:', ids);
+  return ids;
+}
+
+function buildBranchQs(ids) {
+  return ids.length ? '&' + ids.map(id => `branchId=${id}`).join('&') : '';
+}
+
+async function getInvoices(phone) {
+  const token     = await getToken();
+  const branchIds = await getTargetBranchIds();
+  const qs        = `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1${buildBranchQs(branchIds)}`;
   const data  = await httpsRequest({
     hostname: 'public.kiotapi.com',
     path:     qs,
@@ -229,7 +255,9 @@ async function getInvoices(phone) {
 }
 
 async function getMonthlyInvoices() {
-  const token = await getToken();
+  const token     = await getToken();
+  const branchIds = await getTargetBranchIds();
+  const branchQs  = buildBranchQs(branchIds);
   const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
   const y     = now.getFullYear();
   const m     = now.getMonth();
@@ -243,7 +271,7 @@ async function getMonthlyInvoices() {
   while (true) {
     const data = await httpsRequest({
       hostname: 'public.kiotapi.com',
-      path:     `/invoices?pageSize=${pageSize}&currentItem=${currentItem}&status=1&fromPurchaseDate=${from}&toPurchaseDate=${to}`,
+      path:     `/invoices?pageSize=${pageSize}&currentItem=${currentItem}&status=1&fromPurchaseDate=${from}&toPurchaseDate=${to}${branchQs}`,
       method:   'GET',
       headers:  { 'Authorization': `Bearer ${token}`, 'Retailer': CFG.RETAILER },
     });
