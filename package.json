@@ -5,7 +5,6 @@
   "scripts": {
     "start": "node proxy-server.js",
     "dev": "npx wrangler dev",
-    "predeploy": "node -e \"require('fs').copyFileSync('vong-quay-may-man.html','public/vong-quay-may-man.html')\"",
     "deploy": "npx wrangler deploy"
   },
   "keywords": [],
@@ -13,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "googleapis": "^171.4.0",
+    "playwright": "^1.60.0",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
