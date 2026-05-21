@@ -523,6 +523,13 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 body.has-ticker { padding-top: 36px; }
 body.has-ticker .container { margin-top: 0; }
 
+/* Màn hình thấp (Zalo/mobile ~664px): thu nhỏ wheel section */
+@media (max-height: 700px) {
+  #step-wheel { gap: 8px; }
+  .badge { padding: 5px 14px; font-size: 0.82rem; }
+  .container { gap: 14px; padding-top: 16px; }
+}
+
 /* ── Streak badge ── */
 .streak-badge {
   display: inline-flex;
@@ -960,6 +967,7 @@ function goToSpecialWheel(phone) {
   switchTab('spin');
   document.getElementById('step-phone').classList.add('hidden');
   document.getElementById('step-wheel').classList.remove('hidden');
+  document.body.style.overflowY = 'auto';
   document.getElementById('cust-badge').innerHTML =
     `🔥 <strong>${phone}</strong> &nbsp;·&nbsp; 🏆 Lượt quay đặc biệt 7 ngày liên tiếp!`;
   document.getElementById('inv-badge').innerHTML =
@@ -1115,7 +1123,8 @@ function getCurrentPrizes() {
 }
 
 function calcSize() {
-  WS = Math.min(460, window.innerWidth - 40, Math.floor(window.innerHeight * 0.58));
+  const hFactor = window.innerHeight < 700 ? 0.44 : 0.58;
+  WS = Math.min(460, window.innerWidth - 40, Math.floor(window.innerHeight * hFactor));
   WC = WS / 2;
   WR = WC - 10;
   wcanvas.width = wcanvas.height = WS;
@@ -1519,6 +1528,7 @@ async function checkPhone() {
 function goToWheel(phone, inv) {
   document.getElementById('step-phone').classList.add('hidden');
   document.getElementById('step-wheel').classList.remove('hidden');
+  document.body.style.overflowY = 'auto';
 
   const amt = (inv.total || inv.totalPayment || 0).toLocaleString('vi-VN');
   document.getElementById('cust-badge').innerHTML = `📱 <strong>${phone}</strong> &nbsp;·&nbsp; ✅ Đủ điều kiện quay thưởng`;
@@ -1544,6 +1554,7 @@ function resetToPhone() {
 
   document.getElementById('step-wheel').classList.add('hidden');
   document.getElementById('step-phone').classList.remove('hidden');
+  document.body.style.overflowY = 'hidden';
   document.getElementById('result-modal').classList.add('hidden');
   document.getElementById('phone-input').value   = '';
   document.getElementById('invoice-input').value = '';
