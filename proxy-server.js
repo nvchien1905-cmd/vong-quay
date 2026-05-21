@@ -281,7 +281,8 @@ async function getMonthlyInvoices() {
     if (items.length < pageSize) break;
     currentItem += pageSize;
   }
-  return { invoices: all, month: `${String(m + 1).padStart(2, '0')}/${y}` };
+  const invoices = branchIds.length === 0 ? all : all.filter(inv => branchIds.includes(inv.branchId));
+  return { invoices, month: `${String(m + 1).padStart(2, '0')}/${y}` };
 }
 
 function maskPhone(phone) {
