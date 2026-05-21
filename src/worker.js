@@ -314,6 +314,10 @@ async function handleInvoices(url) {
   const phone = url.searchParams.get('phone');
   if (!phone) return jsonResp({ error: 'Thiếu tham số phone' }, 400);
   try {
+    // Kiểm tra SĐT tồn tại trước — KiotViet trả hóa đơn ngẫu nhiên khi customerTel không khớp
+    const custData = await kiotFetch(`/customers?contactNumber=${encodeURIComponent(phone)}&pageSize=1`);
+    if (!(custData.data || []).length) return jsonResp([]);
+
     const branchIds = await getTargetBranchIds();
     const data = await kiotFetch(
       `/invoices?pageSize=100&customerTel=${encodeURIComponent(phone)}&orderDirection=Desc&status=1${buildBranchQs(branchIds)}`

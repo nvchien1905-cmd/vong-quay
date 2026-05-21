@@ -435,6 +435,10 @@ const server = http.createServer(async (req, res) => {
 
     console.log(`[Invoices] SDT: ${phone}`);
     try {
+      // Kiểm tra SĐT tồn tại trước — KiotViet trả hóa đơn ngẫu nhiên khi customerTel không khớp
+      const custData = await getCustomerByPhone(phone);
+      if (!custData.length) { sendJSON(res, 200, []); return; }
+
       const invoices = await getInvoices(phone);
       console.log(`[Invoices] SDT ${phone} -> ${invoices.length} hoa don`);
       sendJSON(res, 200, invoices);
