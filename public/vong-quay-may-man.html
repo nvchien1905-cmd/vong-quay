@@ -16,8 +16,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow-x: clip;
-  overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -331,7 +330,7 @@ input::placeholder { color: rgba(255,255,255,0.3); }
 }
 
 /* Loyalty section */
-#section-loyalty { width: 100%; max-width: 400px; }
+#section-loyalty { width: 100%; max-width: 400px; overflow-y: auto; }
 
 .loyalty-result-box {
   margin-top: 18px;
@@ -776,7 +775,7 @@ body.has-ticker .container { margin-top: 0; }
 // ════════════════════════════════════════════════════════════
 const CFG = {
   PROXY_URL:  'https://vong-quay.vong-quay.workers.dev',
-  MIN_AMOUNT: 200000,
+  MIN_AMOUNT: 499000,
   STORE_NAME: 'Tổng kho Huyền Anh',
   DEMO_MODE:  false,
 
@@ -1085,8 +1084,8 @@ function startCountdownTimer() {
 }
 
 // ──── KiotViet API ────
-async function kvInvoice(phone, code) {
-  const r = await fetch(`${CFG.PROXY_URL}/api/invoice?phone=${encodeURIComponent(phone)}&code=${encodeURIComponent(code)}`);
+async function kvInvoices(phone) {
+  const r = await fetch(`${CFG.PROXY_URL}/api/invoices?phone=${encodeURIComponent(phone)}`);
   if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'Không lấy được hóa đơn từ KiotViet.'); }
   return r.json();
 }
@@ -1479,24 +1478,26 @@ async function checkPhone() {
       return;
     }
 
-    const result = await kvInvoice(phone, invoiceCode);
-    if (!result.valid) {
-      const errMsgs = {
-        PHONE_NOT_FOUND: '❌ Không tìm thấy hóa đơn nào với số điện thoại này. Vui lòng kiểm tra lại SĐT.',
-        CODE_NOT_FOUND:  '❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.',
-        PHONE_MISMATCH:  '❌ Số điện thoại không khớp với hóa đơn này. Vui lòng nhập đúng SĐT đã mua hàng.',
-        AMOUNT_TOO_LOW:  `❌ Giá trị hóa đơn chưa đạt mức tối thiểu <strong>${CFG.MIN_AMOUNT.toLocaleString('vi-VN')}đ</strong> để được quay thưởng.`,
-        NOT_TODAY:       (() => {
-          const d = result.invoiceDate ? new Date(result.invoiceDate).toLocaleDateString('vi-VN') : 'không xác định';
-          return `❌ Hóa đơn không phát sinh trong ngày hôm nay (ngày trên hóa đơn: <strong>${d}</strong>).`;
-        })(),
-      };
-      setMsg(errMsgs[result.reason] || '❌ Hóa đơn không hợp lệ.', 'error');
+    const invoices = await kvInvoices(phone);
+    if (!invoices.length) { setMsg('❌ Không tìm thấy hóa đơn nào với số điện thoại này. Vui lòng kiểm tra lại SĐT.', 'error'); resetBtn(); return; }
+
+    const inv = invoices.find(i => (i.code || '').toUpperCase() === invoiceCode || String(i.id) === invoiceCode);
+    if (!inv) { setMsg('❌ Mã hóa đơn không đúng hoặc không thuộc số điện thoại này.', 'error'); resetBtn(); return; }
+
+    if (lsUsed(inv.id)) { setMsg('❌ Hóa đơn <strong>#' + inv.code + '</strong> đã được sử dụng để quay thưởng rồi.', 'error'); resetBtn(); return; }
+
+    const invDate = inv.purchaseDate || inv.createdDate || inv.modifiedDate;
+    if (!isToday(invDate)) {
+      const dateStr = invDate ? new Date(invDate).toLocaleDateString('vi-VN') : 'không xác định';
+      setMsg(`❌ Hóa đơn <strong>#${inv.code}</strong> không phát sinh trong ngày hôm nay (ngày trên hóa đơn: <strong>${dateStr}</strong>).`, 'error');
       resetBtn(); return;
     }
 
-    const inv = result.invoice;
-    if (lsUsed(inv.id)) { setMsg('❌ Hóa đơn <strong>#' + inv.code + '</strong> đã được sử dụng để quay thưởng rồi.', 'error'); resetBtn(); return; }
+    const amount = inv.total || inv.totalPayment || 0;
+    if (amount < CFG.MIN_AMOUNT) {
+      setMsg(`❌ Giá trị hóa đơn <strong>#${inv.code}</strong> là <strong>${amount.toLocaleString('vi-VN')}đ</strong>, chưa đạt mức tối thiểu <strong>${CFG.MIN_AMOUNT.toLocaleString('vi-VN')}đ</strong> để được quay thưởng.`, 'error');
+      resetBtn(); return;
+    }
 
     activeInvoice = inv;
     goToWheel(phone, inv);
