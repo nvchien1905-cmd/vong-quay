@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Vòng Quay May Mắn</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,8 +15,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 
@@ -30,7 +31,10 @@ body {
   align-items: center;
   gap: 22px;
   padding: 20px;
+  padding-top: 28px;
   width: 100%;
+  min-height: 100vh;
+  justify-content: center;
 }
 
 .store-header { text-align: center; }
@@ -1727,7 +1731,7 @@ function switchTab(tab) {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
   });
-  document.body.style.overflowY = tab === 'top' ? 'auto' : 'hidden';
+  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty') ? 'auto' : 'hidden';
   if (tab === 'spin') {
     document.getElementById('loyalty-phone-input').value = '';
     setLoyaltyMsg('', '');
