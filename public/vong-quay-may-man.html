@@ -923,6 +923,73 @@ body.has-ticker .container { margin-top: 0; }
 }
 .hv-rule-item:last-child { margin-bottom: 0; }
 .hv-rule-dot { color: #FCA5A5; font-weight: 900; flex-shrink: 0; margin-top: 1px; }
+
+/* ── Hệ thống cửa hàng ── */
+#section-store {
+  width: 100%;
+  max-width: 420px;
+  padding-bottom: 20px;
+}
+.store-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  margin: 14px 0 10px;
+}
+.store-section-title::before, .store-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+.store-group {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,215,0,0.15);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.store-group:last-child { margin-bottom: 0; }
+.store-group-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #FFD700;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+.store-branch {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.store-branch:last-child { margin-bottom: 0; }
+.store-branch-badge {
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  font-weight: 900;
+  background: rgba(255,215,0,0.12);
+  border: 1px solid rgba(255,215,0,0.3);
+  color: #FFD700;
+  border-radius: 5px;
+  padding: 2px 5px;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+.store-addr {
+  font-size: 0.77rem;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  line-height: 1.5;
+  transition: color 0.2s;
+}
+.store-addr:hover { color: #FFD700; text-decoration: underline; }
 </style>
 </head>
 
@@ -1152,6 +1219,54 @@ body.has-ticker .container { margin-top: 0; }
         <thead><tr><th>#</th><th>Khách hàng</th><th>Chi tiêu</th></tr></thead>
         <tbody id="top-tbody"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Hệ thống cửa hàng (luôn hiển thị ở cuối tất cả các tab) -->
+  <div id="section-store">
+    <div class="store-section-title">🏪 Hệ Thống Cửa Hàng</div>
+
+    <!-- Tổng kho gia dụng -->
+    <div class="store-group">
+      <div class="store-group-name">🏠 Tổng kho gia dụng Huyền Anh</div>
+      <div class="store-branch">
+        <span class="store-branch-badge">CS1</span>
+        <a href="https://maps.app.goo.gl/G1vMJ7D35h2SKCm37" target="_blank" class="store-addr">Số 66, đường TL417, Phương Đình, Liên Minh, Hà Nội</a>
+      </div>
+      <div class="store-branch">
+        <span class="store-branch-badge">CS2</span>
+        <a href="https://maps.app.goo.gl/4odrFCUQViNgmp5A7" target="_blank" class="store-addr">Số 232 Phố Thú Y, Hoài Đức, Hà Nội</a>
+      </div>
+      <div class="store-branch">
+        <span class="store-branch-badge">CS3</span>
+        <a href="https://maps.app.goo.gl/nXYuTUT8PMvmniTQ8" target="_blank" class="store-addr">Số 118 đường Hồng Hà, Ô Diên, Hà Nội</a>
+      </div>
+    </div>
+
+    <!-- Tổng kho điện máy -->
+    <div class="store-group">
+      <div class="store-group-name">⚡ Tổng kho điện máy Huyền Anh</div>
+      <div class="store-branch">
+        <span class="store-branch-badge">CS1</span>
+        <a href="https://maps.app.goo.gl/C94cBApPEM7iodqg8" target="_blank" class="store-addr">Số 68, đường TL417, Phương Đình, Liên Minh, Hà Nội</a>
+      </div>
+      <div class="store-branch">
+        <span class="store-branch-badge">CS2</span>
+        <a href="https://maps.app.goo.gl/Aqhfb93Sn1ZYqptZ6" target="_blank" class="store-addr">Số 122 đường Hồng Hà, Ô Diên, Hà Nội</a>
+      </div>
+    </div>
+
+    <!-- Mẹ&Bé Mamakids -->
+    <div class="store-group">
+      <div class="store-group-name">👶 Mẹ&amp;Bé Mamakids</div>
+      <div class="store-branch">
+        <span class="store-branch-badge">CS1</span>
+        <a href="https://maps.app.goo.gl/o2xbVNWVioEu3zjLA" target="_blank" class="store-addr">Số 158, đường Tân Thành, Thượng Mỗ, Đan Phượng, Hà Nội</a>
+      </div>
+      <div class="store-branch">
+        <span class="store-branch-badge">CS2</span>
+        <a href="https://maps.app.goo.gl/HHEmYc5SwZ3UaXyr7" target="_blank" class="store-addr">Số 65 đường Trung Tâm, Thọ An, Liên Minh, Hà Nội</a>
+      </div>
     </div>
   </div>
 </div>
@@ -2169,7 +2284,7 @@ function switchTab(tab) {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
   });
-  document.body.style.overflowY = (tab === 'top' || tab === 'loyalty' || tab === 'hoivien') ? 'auto' : 'hidden';
+  document.body.style.overflowY = 'auto';
   if (tab === 'spin') {
     document.getElementById('loyalty-phone-input').value = '';
     setLoyaltyMsg('', '');
