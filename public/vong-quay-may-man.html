@@ -2429,11 +2429,40 @@ function setLoyaltyMsg(html, type) {
   el.innerHTML = html ? `<div class="msg msg-${type}">${html}</div>` : '';
 }
 
+const LOYALTY_LIMIT_LS = 'lw_loyalty_limit_v1';
+const LOYALTY_MAX_PHONES = 3;
+
+function getLoyaltyLimit() {
+  try {
+    const d = JSON.parse(localStorage.getItem(LOYALTY_LIMIT_LS) || '{}');
+    const today = new Date().toISOString().slice(0, 10);
+    if (d.date !== today) return { date: today, phones: [] };
+    return d;
+  } catch { return { date: new Date().toISOString().slice(0, 10), phones: [] }; }
+}
+
+function saveLoyaltyLimit(d) { localStorage.setItem(LOYALTY_LIMIT_LS, JSON.stringify(d)); }
+
+function trackLoyaltyPhone(phone) {
+  const d = getLoyaltyLimit();
+  if (d.phones.includes(phone)) return true;
+  if (d.phones.length >= LOYALTY_MAX_PHONES) return false;
+  d.phones.push(phone);
+  saveLoyaltyLimit(d);
+  return true;
+}
+
 async function checkLoyalty() {
   const phone = document.getElementById('loyalty-phone-input').value.replace(/\s/g, '');
   setLoyaltyMsg('', '');
   document.getElementById('loyalty-result').classList.add('hidden');
   if (!phone || phone.length < 9) { setLoyaltyMsg('⚠️ Vui lòng nhập số điện thoại hợp lệ (ít nhất 9 chữ số).', 'error'); return; }
+
+  const limit = getLoyaltyLimit();
+  if (!limit.phones.includes(phone) && limit.phones.length >= LOYALTY_MAX_PHONES) {
+    setLoyaltyMsg('⚠️ Bạn đã kiểm tra tối đa 3 số điện thoại hôm nay. Vui lòng quay lại ngày mai.', 'error');
+    return;
+  }
   const btn = document.getElementById('loyalty-check-btn');
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Đang tra cứu...';
   try {
@@ -2441,8 +2470,10 @@ async function checkLoyalty() {
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Lỗi máy chủ');
     if (!data.found) {
+      trackLoyaltyPhone(phone);
       setLoyaltyMsg('❌ Không tìm thấy khách hàng với số điện thoại này trong KiotViet.', 'error');
     } else {
+      trackLoyaltyPhone(phone);
       document.getElementById('loy-points').textContent = (data.rewardPoint || 0).toLocaleString('vi-VN');
       document.getElementById('loy-name').textContent   = data.name  || '—';
       document.getElementById('loy-phone').textContent  = data.phone || phone;
