@@ -1026,6 +1026,47 @@ body.has-ticker .container { margin-top: 0; }
   transition: color 0.2s;
 }
 .store-addr:hover { color: #FFD700; text-decoration: underline; }
+
+/* ── Nút Góp Ý Cho Lãnh Đạo ── */
+.gopy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #FF6B35, #DC2626);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+  animation: gopyPulse 1.8s ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+.gopy-btn:active { transform: scale(0.97); }
+@keyframes gopyPulse {
+  0%, 100% {
+    box-shadow: 0 4px 18px rgba(220,38,38,0.45), 0 0 0 0 rgba(255,107,53,0.5);
+  }
+  50% {
+    box-shadow: 0 6px 28px rgba(220,38,38,0.75), 0 0 0 9px rgba(255,107,53,0);
+  }
+}
+.gopy-text {
+  font-style: italic;
+  font-weight: 700;
+  color: rgba(255,255,255,0.82);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  text-align: center;
+  width: 100%;
+  padding: 0 4px;
+}
 </style>
 </head>
 
@@ -1268,6 +1309,14 @@ body.has-ticker .container { margin-top: 0; }
         <tbody id="top-tbody"></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- Nút Góp Ý (hiện ở tab Quay Thưởng, Điểm Tích Lũy, TOP 10) -->
+  <div id="section-gopy" style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:12px;padding-bottom:4px">
+    <a href="https://zalo.me/0336190599" target="_blank" class="gopy-btn">
+      💬 Góp Ý Cho Lãnh Đạo Cửa Hàng
+    </a>
+    <p class="gopy-text">Huyền Anh luôn mong muốn đem lại trải nghiệm hài lòng và những sản phẩm tốt với mức giá cạnh tranh nhất đến quý khách hàng. Chính vì vậy trong quá trình anh chị trải nghiệm mua hàng tại cửa hàng, Huyền Anh rất mong nhận được những góp ý của quý anh chị tới trực tiếp ban lãnh đạo Huyền Anh để có thể kịp thời sửa đổi nhằm mục đích cải thiện ạ.</p>
   </div>
 
   <!-- Hệ thống cửa hàng (luôn hiển thị ở cuối tất cả các tab) -->
@@ -2332,6 +2381,7 @@ function switchTab(tab) {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
   });
+  document.getElementById('section-gopy').classList.toggle('hidden', tab === 'hoivien');
   document.body.style.overflowY = 'auto';
   if (tab === 'spin') {
     document.getElementById('loyalty-phone-input').value = '';
