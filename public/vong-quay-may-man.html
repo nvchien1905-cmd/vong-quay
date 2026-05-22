@@ -1057,6 +1057,21 @@ body.has-ticker .container { margin-top: 0; }
     box-shadow: 0 6px 28px rgba(220,38,38,0.75), 0 0 0 9px rgba(255,107,53,0);
   }
 }
+.loyalty-quota {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.loyalty-quota-ok   { background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.3);  color: #4ADE80; }
+.loyalty-quota-warn { background: rgba(251,146,60,0.1);  border: 1px solid rgba(251,146,60,0.3);  color: #FB923C; }
+.loyalty-quota-out  { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);   color: #FCA5A5; }
+
 .gopy-text {
   font-style: italic;
   font-weight: 700;
@@ -1151,6 +1166,7 @@ body.has-ticker .container { margin-top: 0; }
       <p>Nhập số điện thoại để xem điểm tích lũy của bạn</p>
       <input type="tel" id="loyalty-phone-input" placeholder="Số điện thoại (VD: 0901 234 567)" maxlength="11" autocomplete="off" />
       <button class="btn btn-primary" id="loyalty-check-btn">🔍 Kiểm tra điểm</button>
+      <div id="loyalty-quota"></div>
       <div id="loyalty-msg"></div>
       <div id="loyalty-result" class="loyalty-result-box hidden">
         <div class="loyalty-pts-num" id="loy-points">0</div>
@@ -2388,7 +2404,8 @@ function switchTab(tab) {
     setLoyaltyMsg('', '');
     document.getElementById('loyalty-result').classList.add('hidden');
   }
-  if (tab === 'top') { loadTopCustomers(); startCountdownTimer(); }
+  if (tab === 'top')     { loadTopCustomers(); startCountdownTimer(); }
+  if (tab === 'loyalty') { updateLoyaltyQuota(); }
 }
 
 // ──── Top 10 ────
@@ -2424,6 +2441,22 @@ async function loadTopCustomers() {
 }
 
 // ──── Loyalty ────
+function updateLoyaltyQuota() {
+  const el = document.getElementById('loyalty-quota');
+  if (!el) return;
+  const d    = getLoyaltyLimit();
+  const used = d.phones.length;
+  const left = LOYALTY_MAX_PHONES - used;
+  if (left <= 0) {
+    el.innerHTML = `<span>🚫</span><span>Hết lượt tra cứu hôm nay — quay lại ngày mai</span>`;
+    el.className = 'loyalty-quota loyalty-quota-out';
+  } else {
+    const icon = left === 1 ? '⚠️' : '🔍';
+    el.innerHTML = `<span>${icon}</span><span>Còn lại <strong>${left}/${LOYALTY_MAX_PHONES}</strong> lượt tra cứu hôm nay</span>`;
+    el.className = `loyalty-quota ${left === 1 ? 'loyalty-quota-warn' : 'loyalty-quota-ok'}`;
+  }
+}
+
 function setLoyaltyMsg(html, type) {
   const el = document.getElementById('loyalty-msg');
   el.innerHTML = html ? `<div class="msg msg-${type}">${html}</div>` : '';
@@ -2461,6 +2494,7 @@ async function checkLoyalty() {
   const limit = getLoyaltyLimit();
   if (!limit.phones.includes(phone) && limit.phones.length >= LOYALTY_MAX_PHONES) {
     setLoyaltyMsg('⚠️ Bạn đã kiểm tra tối đa 3 số điện thoại hôm nay. Vui lòng quay lại ngày mai.', 'error');
+    updateLoyaltyQuota();
     return;
   }
   const btn = document.getElementById('loyalty-check-btn');
@@ -2471,9 +2505,11 @@ async function checkLoyalty() {
     if (!r.ok) throw new Error(data.error || 'Lỗi máy chủ');
     if (!data.found) {
       trackLoyaltyPhone(phone);
+      updateLoyaltyQuota();
       setLoyaltyMsg('❌ Không tìm thấy khách hàng với số điện thoại này trong KiotViet.', 'error');
     } else {
       trackLoyaltyPhone(phone);
+      updateLoyaltyQuota();
       document.getElementById('loy-points').textContent = (data.rewardPoint || 0).toLocaleString('vi-VN');
       document.getElementById('loy-name').textContent   = data.name  || '—';
       document.getElementById('loy-phone').textContent  = data.phone || phone;
