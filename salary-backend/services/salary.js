@@ -303,7 +303,8 @@ function calculatePayrollFromKiotviet(kiotvietData, targetRevenue, employeeSetti
     const settings = settingsMap[empId] || {};
     const attendance = attendances[empId] || { totalHours: 0, totalDays: 0 };
 
-    const actualHours = attendance.totalHours || 0;
+    // Ưu tiên settings.actualHours (nhập tay) khi invoice không có dữ liệu giờ
+    const actualHours = settings.actualHours ?? attendance.totalHours ?? 0;
     const isFT = determineFTPT(actualHours);
     const hourCoeff = calcHourCoeff(actualHours, isFT === 'FT');
     const position = settings.position || emp.department || 'NV';
@@ -348,7 +349,7 @@ function calculatePayrollFromKiotviet(kiotvietData, targetRevenue, employeeSetti
 
     const salaryInput = {
       actualHours,
-      actualShifts: attendance.totalDays || 0,
+      actualShifts: settings.actualShifts ?? attendance.totalDays ?? 0,
       hasReplacement: settings.hasReplacement || false,
       teamBonusShare,
     };

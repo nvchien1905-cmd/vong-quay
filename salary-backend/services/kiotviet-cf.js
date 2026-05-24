@@ -121,53 +121,55 @@ async function fetchAllPages(env, path, params = {}) {
   return all;
 }
 
-// ── Nhân viên ─────────────────────────────────────────────────
+// ── Invoices → danh sách seller + doanh thu + ngày làm việc ──
+// /employees và /employees/attendances không khả dụng ở gói API này.
+// Thay thế: dùng /invoices để suy ra seller list, doanh thu, số công.
+// Giờ làm (totalHours) phải cung cấp thủ công qua employeeSettings.
 
-async function getEmployees(env) {
-  const employees = await fetchAllPages(env, '/employees', { includeInactive: false });
-  console.log(`KiotViet: ${employees.length} nhân viên`);
-  return employees;
-}
-
-// ── Chấm công ────────────────────────────────────────────────
-
-async function getAttendances(env, fromDate, toDate) {
-  const records = await fetchAllPages(env, '/employees/attendances', { fromDate, toDate });
-
-  const agg = {};
-  for (const r of records) {
-    const id = String(r.employeeId || r.employeeCode || '');
-    if (!id) continue;
-    if (!agg[id]) agg[id] = { employeeId: id, totalHours: 0, totalDays: 0 };
-    agg[id].totalHours += r.workingHour || 0;
-    agg[id].totalDays += 1;
-  }
-
-  console.log(`KiotViet: chấm công ${fromDate}→${toDate}: ${records.length} bản ghi`);
-  return agg;
-}
-
-// ── Doanh thu ────────────────────────────────────────────────
-
-async function getMonthlyRevenue(env, fromDate, toDate) {
+async function getDataFromInvoices(env, fromDate, toDate) {
   const invoices = await fetchAllPages(env, '/invoices', {
-    status: 'Complete',
+    status: 1,                      // 1 = Hoàn thành (số, giống main worker)
     fromPurchaseDate: fromDate,
     toPurchaseDate: toDate,
   });
 
-  const revenueByEmployee = {};
+  const sellerMap = new Map(); // sellerId → { id, name, revenue, workDays (ngày distinct) }
   let totalRevenue = 0;
 
   for (const inv of invoices) {
-    const payment = inv.totalPayment || 0;
+    const payment = inv.totalPayment || inv.total || 0;
     totalRevenue += payment;
-    const sid = String(inv.soldById || '');
-    if (sid) revenueByEmployee[sid] = (revenueByEmployee[sid] || 0) + payment;
+
+    const sid  = String(inv.soldById   || '');
+    const name = String(inv.soldByName || '');
+    if (!sid) continue;
+
+    const dateKey = (inv.purchaseDate || '').slice(0, 10); // YYYY-MM-DD
+    if (!sellerMap.has(sid)) {
+      sellerMap.set(sid, { id: sid, name, revenue: 0, workDates: new Set(), invoiceCount: 0 });
+    }
+    const s = sellerMap.get(sid);
+    s.revenue += payment;
+    s.invoiceCount += 1;
+    if (dateKey) s.workDates.add(dateKey);
   }
 
-  console.log(`KiotViet: ${invoices.length} hóa đơn, tổng ${totalRevenue.toLocaleString('vi-VN')}đ`);
-  return { revenueByEmployee, totalRevenue };
+  // Chuyển thành cấu trúc tương thích với calculatePayrollFromKiotviet:
+  // employees[], attendances{}, revenueByEmployee{}
+  const employees = [];
+  const attendances = {};
+  const revenueByEmployee = {};
+
+  for (const [sid, s] of sellerMap) {
+    employees.push({ id: sid, name: s.name, invoiceCount: s.invoiceCount });
+    // totalDays = số ngày distinct có hóa đơn (xấp xỉ số công)
+    // totalHours = 0 — phải nhập tay qua employeeSettings
+    attendances[sid] = { employeeId: sid, totalHours: 0, totalDays: s.workDates.size };
+    revenueByEmployee[sid] = s.revenue;
+  }
+
+  console.log(`KiotViet invoices: ${invoices.length} HĐ, ${employees.length} người bán, tổng ${totalRevenue.toLocaleString('vi-VN')}đ`);
+  return { employees, attendances, revenueByEmployee, totalRevenue };
 }
 
 // ── Dữ liệu tổng hợp (có cache) ──────────────────────────────
@@ -186,22 +188,21 @@ export async function getSalaryData(env, year, month) {
   const lastDay = new Date(year, month, 0).getDate();
   const toDate = `${year}-${mm}-${String(lastDay).padStart(2, '0')}`;
 
-  console.log(`KiotViet: lấy dữ liệu lương ${fromDate}→${toDate}`);
+  console.log(`KiotViet: lấy dữ liệu lương từ invoices ${fromDate}→${toDate}`);
 
-  const [employees, attendances, { revenueByEmployee, totalRevenue }] = await Promise.all([
-    getEmployees(env),
-    getAttendances(env, fromDate, toDate),
-    getMonthlyRevenue(env, fromDate, toDate),
-  ]);
+  const { employees, attendances, revenueByEmployee, totalRevenue } =
+    await getDataFromInvoices(env, fromDate, toDate);
 
   const result = {
     employees,
-    attendances,
+    attendances,       // totalDays = ngày bán, totalHours = 0 (nhập tay)
     revenueByEmployee,
     totalRevenue,
     fromDate,
     toDate,
     fetchedAt: new Date().toISOString(),
+    dataSource: 'invoices',
+    warning: 'Giờ làm (totalHours) không có trong dữ liệu invoice. Cung cấp qua employeeSettings[].actualHours để tính FT/PT chính xác.',
   };
 
   cacheSet(cacheKey, result, 5 * 60);
