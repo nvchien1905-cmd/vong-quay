@@ -42,10 +42,14 @@ async function getAccessToken(env) {
     );
   }
 
+  // Trim BOM (﻿) có thể bị thêm khi set secret qua Windows PowerShell
+  const clientId     = (env.KIOTVIET_CLIENT_ID     || '').replace(/^﻿/, '').trim();
+  const clientSecret = (env.KIOTVIET_CLIENT_SECRET || '').replace(/^﻿/, '').trim();
+
   const body = new URLSearchParams({
     grant_type: 'client_credentials',
-    client_id: env.KIOTVIET_CLIENT_ID,
-    client_secret: env.KIOTVIET_CLIENT_SECRET,
+    client_id: clientId,
+    client_secret: clientSecret,
     scopes: 'PublicApi.Access',
   });
 
@@ -83,7 +87,7 @@ async function kvFetch(env, path, params = {}) {
   const res = await fetch(url.toString(), {
     headers: {
       Authorization: `Bearer ${token}`,
-      Retailer: env.KIOTVIET_RETAILER_CODE || '',
+      Retailer: (env.KIOTVIET_RETAILER_CODE || '').replace(/^﻿/, '').trim(),
       'Content-Type': 'application/json',
     },
   });
