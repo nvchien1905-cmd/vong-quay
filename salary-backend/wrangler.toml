@@ -1,0 +1,14 @@
+name = "huyenanh-salary"
+main = "src/worker.js"
+compatibility_date = "2025-05-24"
+
+# ── Biến môi trường tĩnh ────────────────────────────────────
+# Thay đổi CORS_ORIGIN khi deploy production
+[vars]
+CORS_ORIGIN = "https://vong-quay.vong-quay.workers.dev"
+KIOTVIET_BASE_URL = "https://public.kiotapi.com"
+
+# ── Secrets (đặt qua CLI, không commit) ─────────────────────
+# npx wrangler secret put KIOTVIET_CLIENT_ID
+# npx wrangler secret put KIOTVIET_CLIENT_SECRET
+# npx wrangler secret put KIOTVIET_RETAILER_CODE

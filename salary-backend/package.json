@@ -1,0 +1,34 @@
+{
+  "name": "tong-kho-gia-dung-huyenanh-salary",
+  "version": "1.0.0",
+  "description": "Hệ thống tính lương tự động cho Tổng Kho Gia Dụng Huyền Anh",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "dev:worker": "npx wrangler dev",
+    "deploy": "npx wrangler deploy",
+    "test": "node tests/test.js"
+  },
+  "keywords": ["salary", "kiotviet", "payroll", "vietnam"],
+  "author": "Tổng Kho Gia Dụng Huyền Anh",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.4.0",
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "node-cache": "^5.1.2",
+    "winston": "^3.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "wrangler": "^3.60.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
