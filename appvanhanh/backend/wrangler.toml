@@ -1,0 +1,23 @@
+name = "retail-ops-backend"
+main = "worker.js"
+compatibility_date = "2025-05-27"
+compatibility_flags = ["nodejs_compat"]
+
+# ── Cron Triggers ────────────────────────────────────────────
+[triggers]
+crons = ["59 23 * * *"]
+
+# ── Biến môi trường tĩnh ─────────────────────────────────────
+[vars]
+CLIENT_URL = "*"
+
+# ── Secrets (đặt qua CLI, không commit) ─────────────────────
+# npx wrangler secret put DATABASE_URL
+# npx wrangler secret put JWT_SECRET
+# npx wrangler secret put JWT_REFRESH_SECRET
+# npx wrangler secret put FIREBASE_SERVICE_ACCOUNT
+# npx wrangler secret put UPSTASH_REDIS_REST_URL
+# npx wrangler secret put UPSTASH_REDIS_REST_TOKEN
+# npx wrangler secret put CLOUDINARY_CLOUD_NAME
+# npx wrangler secret put CLOUDINARY_API_KEY
+# npx wrangler secret put CLOUDINARY_API_SECRET
