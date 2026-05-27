@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Retail Ops",
+    "slug": "retail-ops",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A2463"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "vn.retailops.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A2463"
+      },
+      "package": "vn.retailops.app"
+    },
+    "plugins": [
+      "expo-notifications",
+      "expo-image-picker",
+      "expo-document-picker"
+    ]
+  }
+}

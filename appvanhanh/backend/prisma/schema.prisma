@@ -1,0 +1,280 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ZONE_MANAGER
+  STORE_MANAGER
+  EMPLOYEE
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PENDING_APPROVAL
+  COMPLETED
+  OVERDUE
+  REJECTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ChecklistType {
+  OPEN_SHIFT
+  CLOSE_SHIFT
+  CLEANING
+  DISPLAY
+  INVENTORY
+  LIVESTREAM
+  CUSTOMER_SERVICE
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  password     String
+  role         Role
+  avatar       String?
+  isActive     Boolean  @default(true)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fcmToken  String?
+
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id])
+
+  zoneId String?
+  zone   Zone?   @relation(fields: [zoneId], references: [id])
+
+  assignedTasks     Task[]     @relation("AssignedTasks")
+  createdTasks      Task[]     @relation("CreatedTasks")
+  collaboratingTasks Task[]    @relation("CollaboratingTasks")
+  taskComments      TaskComment[]
+  taskLogs          TaskLog[]
+  kpiScores         KpiScore[]
+  checklistSessions ChecklistSession[]
+  sopProgress       SopProgress[]
+  quizAttempts      QuizAttempt[]
+}
+
+model Zone {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stores Store[]
+  users  User[]
+}
+
+model Store {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  phone     String?
+  zoneId    String?
+  zone      Zone?    @relation(fields: [zoneId], references: [id])
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users             User[]
+  tasks             Task[]
+  checklistTemplates ChecklistTemplate[]
+  checklistSessions  ChecklistSession[]
+  kpiScores         KpiScore[]
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus @default(NOT_STARTED)
+  priority    Priority   @default(MEDIUM)
+  deadline    DateTime?
+  standard    String?
+
+  creatorId   String
+  creator     User   @relation("CreatedTasks", fields: [creatorId], references: [id])
+
+  assigneeId  String?
+  assignee    User?  @relation("AssignedTasks", fields: [assigneeId], references: [id])
+
+  collaborators User[] @relation("CollaboratingTasks")
+
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id])
+
+  completedAt DateTime?
+  rejectedAt  DateTime?
+  rejectedReason String?
+
+  attachments TaskAttachment[]
+  comments    TaskComment[]
+  logs        TaskLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaskAttachment {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  url       String
+  type      String   // image | video
+  publicId  String?
+  createdAt DateTime @default(now())
+}
+
+model TaskComment {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  content   String
+  mentions  String[] // array of user IDs
+  createdAt DateTime @default(now())
+}
+
+model TaskLog {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+}
+
+model ChecklistTemplate {
+  id      String        @id @default(uuid())
+  name    String
+  type    ChecklistType
+  storeId String?
+  store   Store?        @relation(fields: [storeId], references: [id])
+
+  items     ChecklistTemplateItem[]
+  sessions  ChecklistSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChecklistTemplateItem {
+  id          String            @id @default(uuid())
+  templateId  String
+  template    ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  label       String
+  order       Int               @default(0)
+  requirePhoto Boolean          @default(false)
+}
+
+model ChecklistSession {
+  id          String            @id @default(uuid())
+  templateId  String
+  template    ChecklistTemplate @relation(fields: [templateId], references: [id])
+  storeId     String
+  store       Store             @relation(fields: [storeId], references: [id])
+  userId      String
+  user        User              @relation(fields: [userId], references: [id])
+  shiftDate   DateTime          @default(now())
+  completedAt DateTime?
+
+  items ChecklistSessionItem[]
+
+  createdAt DateTime @default(now())
+}
+
+model ChecklistSessionItem {
+  id          String           @id @default(uuid())
+  sessionId   String
+  session     ChecklistSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  label       String
+  isChecked   Boolean          @default(false)
+  photoUrl    String?
+  note        String?
+  checkedAt   DateTime?
+}
+
+model KpiScore {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id])
+  score     Int      @default(0)
+  reason    String
+  taskId    String?
+  month     Int
+  year      Int
+  createdAt DateTime @default(now())
+}
+
+model SopDocument {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  fileUrl     String
+  fileType    String   // pdf | video
+  publicId    String?
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  progress SopProgress[]
+  quizzes  Quiz[]
+}
+
+model SopProgress {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  documentId  String
+  document    SopDocument @relation(fields: [documentId], references: [id])
+  isCompleted Boolean     @default(false)
+  completedAt DateTime?
+  createdAt   DateTime    @default(now())
+
+  @@unique([userId, documentId])
+}
+
+model Quiz {
+  id          String      @id @default(uuid())
+  documentId  String
+  document    SopDocument @relation(fields: [documentId], references: [id])
+  title       String
+  questions   Json        // array of { question, options[], correctIndex }
+  createdAt   DateTime    @default(now())
+
+  attempts QuizAttempt[]
+}
+
+model QuizAttempt {
+  id        String   @id @default(uuid())
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  answers   Json     // array of selected indices
+  score     Int
+  passed    Boolean
+  createdAt DateTime @default(now())
+}
