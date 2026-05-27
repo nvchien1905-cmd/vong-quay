@@ -7,6 +7,11 @@ compatibility_flags = ["nodejs_compat"]
 [triggers]
 crons = ["59 23 * * *"]
 
+# ── Hyperdrive (PostgreSQL proxy — miễn phí 1M queries/tháng) ──
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "684aa9f4608a4fdcb339b90e45bd93c8"
+
 # ── Biến môi trường tĩnh ─────────────────────────────────────
 [vars]
 CLIENT_URL = "*"
