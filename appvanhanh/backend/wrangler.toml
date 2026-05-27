@@ -14,7 +14,7 @@ id = "684aa9f4608a4fdcb339b90e45bd93c8"
 
 # ── Biến môi trường tĩnh ─────────────────────────────────────
 [vars]
-CLIENT_URL = "*"
+CLIENT_URL = "https://retail-ops-admin.pages.dev"
 
 # ── Secrets (đặt qua CLI, không commit) ─────────────────────
 # npx wrangler secret put DATABASE_URL
